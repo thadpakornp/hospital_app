@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/charts_user_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ChartsScreen extends StatefulWidget {
   @override
@@ -13,15 +13,13 @@ class ChartsScreen extends StatefulWidget {
 
 class _ChartsScreenState extends State<ChartsScreen> {
   ApiProvider apiProvider = ApiProvider();
-
+  final storage = new FlutterSecureStorage();
   var charts;
   bool isLoding = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future<Null> _getCharts() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
-
+    String token = await storage.read(key: 'token');
     try {
       final response = await apiProvider.getCharts(token);
       if (response.statusCode == 200) {

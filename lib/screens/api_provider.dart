@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:hospitalapp/resources/getPrefix.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class ApiProvider {
@@ -121,7 +121,7 @@ class ApiProvider {
     return http.get(_url, headers: headers);
   }
 
-  Future<http.Response> getProfix() async {
+  Future<http.Response> getPrefix() async {
     String _url = '$endPoint/prefix';
 
     return http.get(_url);

@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/login_screen.dart';
 import 'package:hospitalapp/screens/profile_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class UserScreen extends StatefulWidget {
   @override
@@ -14,23 +14,20 @@ class UserScreen extends StatefulWidget {
 final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 ApiProvider apiProvider = ApiProvider();
-
+final storage = new FlutterSecureStorage();
 Future doLogout(BuildContext context) async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  String access_token = await prefs.get('access_token');
-
+  String token = await storage.read(key: 'token');
   try {
-    final response = await apiProvider.doLogout(access_token);
+    final response = await apiProvider.doLogout(token);
     if (response.statusCode == 200) {
-      bool remove_token = await prefs.remove('access_token');
-      if (remove_token) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LoginScreen(),
-          ),
-        );
-      }
+      await storage.deleteAll();
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ),
+      );
     } else {
       final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
       _scaffoldKey.currentState.showSnackBar(snackBar);
@@ -49,41 +46,37 @@ Future doLogout(BuildContext context) async {
   }
 }
 
-
-
 class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
-
     void _showDialog() {
-    // flutter defined function
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("ยืนยัน"),
-          content: new Text("ต้องการออกระบบ"),
-          actions: <Widget>[
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("ยกเลิก"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text("ตกลง"),
-              onPressed: () {
-                doLogout(context);
-                
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+      // flutter defined function
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: new Text("ยืนยัน"),
+            content: new Text("ต้องการออกระบบ"),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              new FlatButton(
+                child: new Text("ยกเลิก"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: new Text("ตกลง"),
+                onPressed: () {
+                  doLogout(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return Scaffold(
       key: _scaffoldKey,
@@ -98,8 +91,9 @@ class _UserScreenState extends State<UserScreen> {
               leading: Icon(Icons.account_circle),
               title: Text('ข้อมูลส่วนตัว'),
               trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: (){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ProfileScreen()));
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => ProfileScreen()));
               },
             ),
             ListTile(

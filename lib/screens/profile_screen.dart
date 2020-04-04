@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
+import 'package:image_picker/image_picker.dart';
 import 'dart:async';
-
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -15,6 +17,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ApiProvider apiProvider = ApiProvider();
   var profile;
   bool isLoding = true;
+  String _mySelection;
+  List prefixs = List();
+  File _image;
+  bool _isUploading = false;
+  final storage = new FlutterSecureStorage();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   TextEditingController _name = TextEditingController();
@@ -22,9 +29,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController _phone = TextEditingController();
   TextEditingController _email = TextEditingController();
 
+  Future _getPrefix() async {
+    try {
+      final rs = await apiProvider.getPrefix();
+      if (rs.statusCode == 200) {
+        var jsonResponse = json.decode(rs.body);
+        setState(() {
+          prefixs = jsonResponse['data'];
+        });
+      } else {
+        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
+    } catch (e) {
+      print(e);
+      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
+
   Future _getProfile() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
+    String token = await storage.read(key: 'token');
     try {
       final response = await apiProvider.getProfile(token);
       if (response.statusCode == 200) {
@@ -36,6 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _surname.text = profile['surname'];
           _phone.text = profile['phone'];
           _email.text = profile['email'];
+          _mySelection = profile['prefix']['id'];
         });
       } else {
         final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
@@ -53,6 +79,104 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // TODO: implement initState
     super.initState();
     _getProfile();
+    _getPrefix();
+  }
+
+  Future getImage(ImageSource source) async {
+    var image = await ImagePicker.pickImage(source: source);
+    setState(() {
+      _image = image;
+      Navigator.pop(context);
+    });
+  }
+
+  void _openImagePickerModal(BuildContext context) {
+    final flatButtonColor = Theme.of(context).primaryColor;
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 150.0,
+            padding: EdgeInsets.all(10.0),
+            child: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: 10.0,
+                ),
+                FlatButton(
+                  textColor: flatButtonColor,
+                  child: Text('กล้องถ่ายภาพ'),
+                  onPressed: () {
+                    getImage(ImageSource.camera);
+                  },
+                ),
+                FlatButton(
+                  textColor: flatButtonColor,
+                  child: Text('คลังรูปภาพ'),
+                  onPressed: () {
+                    getImage(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  Future _saved() async {
+    setState(() {
+      _isUploading = true;
+    });
+    String token = await storage.read(key: 'token');
+    FormData data = new FormData();
+
+    if (_image == null) {
+      data = FormData.fromMap({
+        'prefix_id': _mySelection.toString(),
+        'name': _name.text,
+        'surname': _surname.text,
+        'phone': _phone.text,
+      });
+    } else {
+      data = FormData.fromMap({
+        'prefix_id': _mySelection.toString(),
+        'name': _name.text,
+        'surname': _surname.text,
+        'phone': _phone.text,
+        "profile": await MultipartFile.fromFile(
+          _image.path,
+          filename: _image.path.split('/').last,
+        ),
+      });
+    }
+
+    Dio dio = new Dio();
+    dio.options.headers['Accept'] = 'application/json';
+    dio.options.headers["Authorization"] = "Bearer $token";
+    Response response = await dio.post(
+      'http://192.168.101.61/api/v1/users/updated',
+      data: data,
+    );
+    setState(() {
+      _isUploading = false;
+    });
+    if (response.statusCode == 200) {
+      var rs = response.data;
+      if (rs['code'] == '200') {
+        setState(() {
+          _getProfile();
+          _getPrefix();
+        });
+        final snackBar = SnackBar(content: Text(rs['data']));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      } else {
+        final snackBar = SnackBar(content: Text(rs['data']));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
+    } else {
+      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -64,7 +188,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),
-            onPressed: () {},
+            onPressed: () {
+              _saved();
+            },
           ),
         ],
       ),
@@ -74,13 +200,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Card(
                 child: Column(
                   children: <Widget>[
+                    Center(
+                      child: _isUploading
+                          ? Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: CircularProgressIndicator(),
+                            )
+                          : null,
+                    ),
                     SizedBox(
                       height: 10.0,
                     ),
                     Center(
                       child: CircleAvatar(
                         radius: 80.0,
-                        backgroundImage: NetworkImage(profile['profile']),
+                        backgroundImage: _image != null
+                            ? FileImage(_image)
+                            : NetworkImage(profile['profile']),
                       ),
                     ),
                     SizedBox(
@@ -97,7 +233,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         onTap: () {
-                          print('t');
+                          _openImagePickerModal(context);
                         },
                       ),
                     ),
@@ -160,6 +296,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   color: Colors.black,
                                 ),
                               ),
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  'คำนำหน้า : ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Center(
+                                  child: new DropdownButton(
+                                    items: prefixs.map((item) {
+                                      return new DropdownMenuItem(
+                                        child: new Text(item['name']),
+                                        value: item['id'].toString(),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newVal) {
+                                      setState(() {
+                                        _mySelection = newVal;
+                                      });
+                                    },
+                                    value: _mySelection,
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(
                               height: 10.0,

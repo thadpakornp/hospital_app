@@ -6,9 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 import 'chewie_list_item.dart';
@@ -25,7 +25,7 @@ class _UploadScreenState extends State<UploadScreen> {
   File _image;
   String _description;
   bool isVideo = false;
-
+  final storage = new FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
   var description = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -121,8 +121,7 @@ class _UploadScreenState extends State<UploadScreen> {
         setState(() {
           _isUploading = true;
         });
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String token = await prefs.get('access_token');
+        String token = await storage.read(key: 'token');
 
         try {
           final response =
@@ -171,12 +170,7 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() {
       _isUploading = true;
     });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
-    Map<String, dynamic> headers = {
-      "Authorization": "Bearer $token",
-      "Accept": "application/json",
-    };
+    String token = await storage.read(key: 'token');
 
     String fileName = image.path.split('/').last;
     FormData data = new FormData();
@@ -198,10 +192,11 @@ class _UploadScreenState extends State<UploadScreen> {
     }
 
     Dio dio = new Dio();
+    dio.options.headers['Accept'] = 'application/json';
+    dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
       'http://192.168.101.61/api/v1/charts/uploaded',
       data: data,
-      options: Options(headers: headers, contentType: "application/json"),
     );
     if (response.statusCode != 200) {
       return null;

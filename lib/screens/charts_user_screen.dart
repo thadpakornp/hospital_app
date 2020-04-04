@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hospitalapp/resources/chart_files.dart';
 import 'package:hospitalapp/screens/add_charts_description_screen.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import "package:video_player/video_player.dart";
 
 import 'chewie_list_item.dart';
@@ -42,12 +42,11 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
 
   _ChartsUserScreenState(
       this.id, this.prefix, this.name, this.surname, this.hn);
-
+  final storage = new FlutterSecureStorage();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   Future _success() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
+    String token = await storage.read(key: 'token');
 
     try {
       final response = await apiProvider.successCharts(token, id);
@@ -68,9 +67,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
   }
 
   Future _deleted(int id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
-
+    String token = await storage.read(key: 'token');
     try {
       final response = await apiProvider.deletedCharts(token, id);
       if (response.statusCode == 200) {
@@ -96,8 +93,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
   }
 
   Future<Null> _getChart() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
+    String token = await storage.read(key: 'token');
 
     try {
       final response = await apiProvider.getChartsByID(token, id);
@@ -122,8 +118,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
   }
 
   Future _getFiles(int id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
+    String token = await storage.read(key: 'token');
 
     try {
       final response = await apiProvider.getFile(token, id);
@@ -396,6 +391,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                       builder: (context) => new AddChartDescription(id)),
                 ).then((value) {
                   setState(() {
+                    isLoding = true;
                     _getChart();
                   });
                 });

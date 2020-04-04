@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/home_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   ApiProvider apiProvider = ApiProvider();
-
+  final storage = new FlutterSecureStorage();
   final TextEditingController ctrlEmail = TextEditingController();
   final TextEditingController ctrlPassword = TextEditingController();
 
@@ -40,8 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final snackBar = SnackBar(content: Text(status['data']));
           _scaffoldKey.currentState.showSnackBar(snackBar);
         } else {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('access_token', status['data']);
+          await storage.write(key: 'token', value: status['data']);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -60,8 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<bool> checkToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await prefs.get('access_token');
+    String token = await storage.read(key: 'token');
     if (token != null) {
       Navigator.pushReplacement(
         context,
