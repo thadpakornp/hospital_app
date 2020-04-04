@@ -10,6 +10,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'chewie_list_item.dart';
 
@@ -25,10 +26,25 @@ class _UploadScreenState extends State<UploadScreen> {
   File _image;
   String _description;
   bool isVideo = false;
+  var _golocation;
   final storage = new FlutterSecureStorage();
   final _formKey = GlobalKey<FormState>();
   var description = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  Future _getLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _golocation = position;
+    });
+  }
 
   //========================= Gellary / Camera AlerBox
   void _openImagePickerModal(BuildContext context) {
@@ -302,6 +318,19 @@ class _UploadScreenState extends State<UploadScreen> {
                       key: _formKey,
                       child: Column(
                         children: <Widget>[
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'ที่ตั้ง : $_golocation',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5.0,
+                          ),
                           Row(
                             children: <Widget>[
                               Expanded(
@@ -332,6 +361,9 @@ class _UploadScreenState extends State<UploadScreen> {
                                 ),
                               ),
                             ],
+                          ),
+                          SizedBox(
+                            height: 10.0,
                           ),
                           Row(
                             children: <Widget>[
