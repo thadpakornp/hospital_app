@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/login_screen.dart';
+import 'package:hospitalapp/screens/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 ApiProvider apiProvider = ApiProvider();
 
-Future<Null> doLogout(BuildContext context) async {
+Future doLogout(BuildContext context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String access_token = await prefs.get('access_token');
 
@@ -35,6 +36,7 @@ Future<Null> doLogout(BuildContext context) async {
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   } catch (error) {
+    print(error);
     _scaffoldKey.currentState.showSnackBar(
       new SnackBar(
         content: new Row(
@@ -47,9 +49,42 @@ Future<Null> doLogout(BuildContext context) async {
   }
 }
 
+
+
 class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
+
+    void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("ยืนยัน"),
+          content: new Text("ต้องการออกระบบ"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("ยกเลิก"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("ตกลง"),
+              onPressed: () {
+                doLogout(context);
+                
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey,
@@ -63,6 +98,9 @@ class _UserScreenState extends State<UserScreen> {
               leading: Icon(Icons.account_circle),
               title: Text('ข้อมูลส่วนตัว'),
               trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ProfileScreen()));
+              },
             ),
             ListTile(
               leading: Icon(Icons.vpn_key),
@@ -80,7 +118,7 @@ class _UserScreenState extends State<UserScreen> {
               title: Text('ออกจากระบบ'),
               trailing: Icon(Icons.keyboard_arrow_right),
               onTap: () {
-                doLogout(context);
+                _showDialog();
               },
             ),
           ],

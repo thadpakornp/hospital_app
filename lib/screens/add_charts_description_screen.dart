@@ -192,7 +192,7 @@ class _AddChartDescription extends State<AddChartDescription> {
 
     Dio dio = new Dio();
     Response response = await dio.post(
-      'http://192.168.101.86/api/v1/charts/stored',
+      'http://192.168.101.61/api/v1/charts/stored',
       data: data,
       options: Options(headers: headers, contentType: "application/json"),
     );

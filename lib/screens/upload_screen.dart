@@ -199,7 +199,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
     Dio dio = new Dio();
     Response response = await dio.post(
-      'http://192.168.101.86/api/v1/charts/uploaded',
+      'http://192.168.101.61/api/v1/charts/uploaded',
       data: data,
       options: Options(headers: headers, contentType: "application/json"),
     );

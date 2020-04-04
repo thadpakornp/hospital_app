@@ -2,7 +2,6 @@
     package="com.imatthio.hospitalapp">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="hospitalapp"
@@ -26,4 +25,6 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 </manifest>

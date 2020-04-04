@@ -1,11 +1,12 @@
 import 'dart:async';
 
+import 'package:hospitalapp/resources/getPrefix.dart';
 import 'package:http/http.dart' as http;
 
 class ApiProvider {
   ApiProvider();
 
-  String endPoint = 'http://192.168.101.86/api/v1';
+  String endPoint = 'http://192.168.101.61/api/v1';
 
   Future<http.Response> doLogin(String username, String password) async {
     String _url = '$endPoint/login';
@@ -85,5 +86,44 @@ class ApiProvider {
       'charts_desc_id': '$id',
     };
     return http.post(_url, body: bodys, headers: headers);
+  }
+
+  Future<http.Response> successCharts(String token, int id) async {
+    String _url = '$endPoint/charts/descriptions/success';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    var bodys = {
+      'id': '$id',
+    };
+    return http.post(_url, body: bodys, headers: headers);
+  }
+
+  Future<http.Response> deletedCharts(String token, int id) async {
+    String _url = '$endPoint/charts/descriptions/deleted';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    var bodys = {
+      'id': '$id',
+    };
+    return http.post(_url, body: bodys, headers: headers);
+  }
+
+  Future<http.Response> getProfile(String token) async {
+    String _url = '$endPoint/users/profile';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    return http.get(_url, headers: headers);
+  }
+
+  Future<http.Response> getProfix() async {
+    String _url = '$endPoint/prefix';
+
+    return http.get(_url);
   }
 }

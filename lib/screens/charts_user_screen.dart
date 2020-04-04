@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hospitalapp/resources/chart_files.dart';
 import 'package:hospitalapp/screens/add_charts_description_screen.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
@@ -37,9 +38,62 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
   bool isLoding = true;
   var chart_lasted;
   var chart_status;
+  var charts_date;
 
   _ChartsUserScreenState(
       this.id, this.prefix, this.name, this.surname, this.hn);
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  Future _success() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await prefs.get('access_token');
+
+    try {
+      final response = await apiProvider.successCharts(token, id);
+      if (response.statusCode == 200) {
+        setState(() {
+          _getChart();
+        });
+        final snackBar = SnackBar(content: Text('สิ้นสุดการรักษาแล้ว'));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      } else {
+        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
+    } catch (error) {
+      final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
+
+  Future _deleted(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await prefs.get('access_token');
+
+    try {
+      final response = await apiProvider.deletedCharts(token, id);
+      if (response.statusCode == 200) {
+        final jsonRs = json.decode(response.body);
+        if (jsonRs['code'] == '200') {
+          setState(() {
+            _getChart();
+          });
+          final snackBar = SnackBar(content: Text('ลบเรียบร้อยแล้ว'));
+          _scaffoldKey.currentState.showSnackBar(snackBar);
+        } else {
+          final snackBar = SnackBar(content: Text(jsonRs['data']));
+          _scaffoldKey.currentState.showSnackBar(snackBar);
+        }
+      } else {
+        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
+        _scaffoldKey.currentState.showSnackBar(snackBar);
+      }
+    } catch (error) {
+      final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
+      _scaffoldKey.currentState.showSnackBar(snackBar);
+    }
+  }
 
   Future<Null> _getChart() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -55,6 +109,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
         setState(() {
           chart_lasted = jsonResponse['data']['lasted'];
           chart_status = jsonResponse['data']['charts_status'][0]['status'];
+          charts_date = jsonResponse['data']['charts_date'];
         });
       } else {
         final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
@@ -102,7 +157,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index) {
                   final files = snapshot.data[index];
-                  if (files.type_files == 'mp4') {
+                  if (files.type_files == 'mp4' || files.type_files == 'MOV') {
                     return _video(files.files);
                   } else {
                     return _image(files.files);
@@ -182,6 +237,39 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                             Navigator.of(context).pop();
                           })),
                 ]),
+                Stack(
+                  children: <Widget>[
+                    Container(
+                      height: 220.0,
+                      child: ListView.builder(
+                        itemCount: charts_date.length ?? 0,
+                        itemBuilder: (context, int index) {
+                          return FlatButton(
+                            onPressed: () {
+                              setState(() {
+                                id = charts_date[index]['id'];
+                                isLoding = true;
+                                _getChart();
+                              });
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 40.0,
+                              child: Center(
+                                  child: Text(
+                                charts_date[index]['created_at'],
+                                style: (id == charts_date[index]['id'])
+                                    ? TextStyle(color: Colors.pink)
+                                    : TextStyle(color: Colors.black),
+                              ) // Your desired title
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           );
@@ -227,26 +315,116 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
     _getChart();
   }
 
+  void _showDialogDeleted(int id) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("ยืนยัน"),
+          content: new Text("ต้องการลบรายการที่เลือก?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("ยกเลิก"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("ตกลง"),
+              onPressed: () {
+                _deleted(id);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("ยืนยัน"),
+          content: new Text("การรักษาเสร็จสิ้นแล้วใช่หรือไม่"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("ยกเลิก"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("ตกลง"),
+              onPressed: () {
+                _success();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget floatingBar = FloatingActionButton(
-      backgroundColor: Colors.blue,
-      tooltip: 'เพิ่มจ้อมูล',
-      onPressed: () {
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-              builder: (context) => new AddChartDescription(id)),
-        ).then((value) {
-          setState(() {
-            _getChart();
-          });
-        });
-      },
-      child: Icon(Icons.add),
-    );
+    Widget _getFAB() {
+      return SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: IconThemeData(size: 22),
+        backgroundColor: Color(0xFF801E48),
+        visible: true,
+        curve: Curves.bounceIn,
+        children: [
+          // FAB 1
+          SpeedDialChild(
+              child: Icon(Icons.add),
+              backgroundColor: Color(0xFF801E48),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (context) => new AddChartDescription(id)),
+                ).then((value) {
+                  setState(() {
+                    _getChart();
+                  });
+                });
+              },
+              label: 'บันทึกการรักษา',
+              labelStyle: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                  fontSize: 16.0),
+              labelBackgroundColor: Color(0xFF801E48)),
+          // FAB 2
+          SpeedDialChild(
+              child: Icon(Icons.check),
+              backgroundColor: Color(0xFF801E48),
+              onTap: () {
+                _showDialog();
+              },
+              label: 'สิ้นสุดการรักษา',
+              labelStyle: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                  fontSize: 16.0),
+              labelBackgroundColor: Color(0xFF801E48))
+        ],
+      );
+    }
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('$prefix $name $surname HN $hn'),
         actions: <Widget>[
@@ -254,6 +432,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
             icon: Icon(Icons.calendar_today),
             onPressed: () {
               _calendar(context);
+              setState(() {});
             },
           ),
           IconButton(
@@ -287,7 +466,16 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                                   '${chart_lasted[index]['add_by_user']['prefix']['name']} ${chart_lasted[index]['add_by_user']['name']} ${chart_lasted[index]['add_by_user']['surname']}'),
                               subtitle:
                                   Text('${chart_lasted[index]['created_at']}'),
-                              trailing: Icon(Icons.more_horiz),
+                              trailing: IconButton(
+                                alignment: Alignment.centerRight,
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () {
+                                  _showDialogDeleted(chart_lasted[index]['id']);
+                                },
+                              ),
                             ),
                           ),
                           Container(
@@ -321,7 +509,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                 ),
               ),
             ),
-      floatingActionButton: chart_status == 'Activate' ? floatingBar : null,
+      floatingActionButton: chart_status == 'Activate' ? _getFAB() : null,
     );
   }
 }
