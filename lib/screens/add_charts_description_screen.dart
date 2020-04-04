@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
@@ -27,7 +28,7 @@ class _AddChartDescription extends State<AddChartDescription> {
   int id;
 
   _AddChartDescription(this.id);
-
+  var _golocation;
   bool _isUploading = false;
   File _image;
   String _description;
@@ -36,6 +37,20 @@ class _AddChartDescription extends State<AddChartDescription> {
   final _formKey = GlobalKey<FormState>();
   var description = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  Future _getLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _golocation = position;
+    });
+  }
 
   //========================= Gellary / Camera AlerBox
   void _openImagePickerModal(BuildContext context) {
@@ -294,6 +309,19 @@ class _AddChartDescription extends State<AddChartDescription> {
                       key: _formKey,
                       child: Column(
                         children: <Widget>[
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'ที่ตั้ง : $_golocation',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5.0,
+                          ),
                           Row(
                             children: <Widget>[
                               Expanded(
