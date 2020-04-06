@@ -81,10 +81,6 @@ class _ChartsScreenState extends State<ChartsScreen> {
                                 MaterialPageRoute(
                                   builder: (context) => ChartsUserScreen(
                                     charts[index]['id'],
-                                    charts[index]['prefix'],
-                                    charts[index]['name'],
-                                    charts[index]['surname'],
-                                    charts[index]['hn'],
                                   ),
                                 ),
                               );

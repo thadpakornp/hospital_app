@@ -6,42 +6,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hospitalapp/resources/chart_files.dart';
 import 'package:hospitalapp/screens/add_charts_description_screen.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
+import 'package:hospitalapp/screens/charts_map_screen.dart';
 import "package:video_player/video_player.dart";
 
 import 'chewie_list_item.dart';
 
 class ChartsUserScreen extends StatefulWidget {
   int id;
-  String prefix;
-  String name;
-  String surname;
-  String hn;
-
-  ChartsUserScreen(this.id, this.prefix, this.name, this.surname, this.hn);
+  ChartsUserScreen(this.id);
 
   @override
-  _ChartsUserScreenState createState() =>
-      _ChartsUserScreenState(id, prefix, name, surname, hn);
+  _ChartsUserScreenState createState() => _ChartsUserScreenState(id);
 }
 
 class _ChartsUserScreenState extends State<ChartsUserScreen> {
   ApiProvider apiProvider = ApiProvider();
 
   int id;
-  String prefix;
-  String name;
-  String surname;
-  String hn;
+  String prefix = '';
+  String name = '';
+  String surname = '';
+  String hn = '';
   bool isLoding = true;
   var chart_lasted;
   var chart_status;
   var charts_date;
 
-  _ChartsUserScreenState(
-      this.id, this.prefix, this.name, this.surname, this.hn);
+  _ChartsUserScreenState(this.id);
   final storage = new FlutterSecureStorage();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -106,14 +101,18 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
           chart_lasted = jsonResponse['data']['lasted'];
           chart_status = jsonResponse['data']['charts_status'][0]['status'];
           charts_date = jsonResponse['data']['charts_date'];
+          prefix = jsonResponse['data']['charts_info']['prefix'];
+          name = jsonResponse['data']['charts_info']['name'];
+          surname = jsonResponse['data']['charts_info']['surname'];
+          hn = jsonResponse['data']['charts_info']['hn'];
         });
       } else {
         final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        Scaffold.of(context).showSnackBar(snackBar);
+        _scaffoldKey.currentState.showSnackBar(snackBar);
       }
     } catch (error) {
       final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(snackBar);
     }
   }
 
@@ -462,15 +461,47 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                                   '${chart_lasted[index]['add_by_user']['prefix']['name']} ${chart_lasted[index]['add_by_user']['name']} ${chart_lasted[index]['add_by_user']['surname']}'),
                               subtitle:
                                   Text('${chart_lasted[index]['created_at']}'),
-                              trailing: IconButton(
-                                alignment: Alignment.centerRight,
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  _showDialogDeleted(chart_lasted[index]['id']);
-                                },
+                              trailing: Wrap(
+                                spacing: 0,
+                                children: <Widget>[
+                                  IconButton(
+                                    alignment: Alignment.centerRight,
+                                    icon: Icon(
+                                      Icons.near_me,
+                                      color: (chart_lasted[index]
+                                                  ['g_location_lat']) !=
+                                              null
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      (chart_lasted[index]['g_location_lat']) !=
+                                              null
+                                          ? Navigator.of(context).push(MaterialPageRoute(
+                                              builder: (context) => chartsMapScreen(
+                                                  num.tryParse(chart_lasted[index]
+                                                          ['g_location_lat'])
+                                                      .toDouble(),
+                                                  num.tryParse(chart_lasted[index]
+                                                          ['g_location_long'])
+                                                      .toDouble())))
+                                          : _scaffoldKey.currentState
+                                              .showSnackBar(SnackBar(
+                                                  content: Text('ไม่พบเส้นทาง')));
+                                    },
+                                  ),
+                                  IconButton(
+                                    alignment: Alignment.centerRight,
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      _showDialogDeleted(
+                                          chart_lasted[index]['id']);
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -493,7 +524,33 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                                           child:
                                               _files(chart_lasted[index]['id']),
                                         )
-                                      : Container(),
+                                      : chart_lasted[index]['g_location_lat'] !=
+                                              null
+                                          ? Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: 200.0,
+                                              child: GoogleMap(
+                                                mapType: MapType.hybrid,
+                                                initialCameraPosition:
+                                                    CameraPosition(
+                                                  target: LatLng(
+                                                      num.tryParse(chart_lasted[
+                                                                      index][
+                                                                  'g_location_lat'])
+                                                              .toDouble() ??
+                                                          13.7894338,
+                                                      num.tryParse(chart_lasted[
+                                                                      index][
+                                                                  'g_location_long'])
+                                                              .toDouble() ??
+                                                          100.5858793),
+                                                  zoom: 14.4746,
+                                                ),
+                                              ),
+                                            )
+                                          : Container(),
                                 ],
                               ),
                             ),

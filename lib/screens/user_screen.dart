@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/login_screen.dart';
+import 'package:hospitalapp/screens/password_change.dart';
 import 'package:hospitalapp/screens/profile_screen.dart';
 
 class UserScreen extends StatefulWidget {
@@ -100,13 +101,12 @@ class _UserScreenState extends State<UserScreen> {
               leading: Icon(Icons.vpn_key),
               title: Text('เปลี่ยนรหัสผ่าน'),
               trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => passwordChange()));
+              },
             ),
             Divider(),
-            ListTile(
-              leading: Icon(Icons.error),
-              title: Text('เกี่ยวกับ'),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text('ออกจากระบบ'),
