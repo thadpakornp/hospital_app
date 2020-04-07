@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -35,6 +36,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
   var chart_lasted;
   var chart_status;
   var charts_date;
+  var charts_info;
 
   _ChartsUserScreenState(this.id);
   final storage = new FlutterSecureStorage();
@@ -98,13 +100,14 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         setState(() {
-          chart_lasted = jsonResponse['data']['lasted'];
-          chart_status = jsonResponse['data']['charts_status'][0]['status'];
-          charts_date = jsonResponse['data']['charts_date'];
+          charts_info = jsonResponse['data']['charts_info'];
           prefix = jsonResponse['data']['charts_info']['prefix'];
           name = jsonResponse['data']['charts_info']['name'];
           surname = jsonResponse['data']['charts_info']['surname'];
           hn = jsonResponse['data']['charts_info']['hn'];
+          chart_lasted = jsonResponse['data']['lasted'];
+          chart_status = jsonResponse['data']['charts_status'][0]['status'];
+          charts_date = jsonResponse['data']['charts_date'];
         });
       } else {
         final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
@@ -226,7 +229,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                       left: 0.0,
                       top: 5.0,
                       child: IconButton(
-                          icon: Icon(Icons.arrow_back), // Your desired icon
+                          icon: Icon(Icons.close), // Your desired icon
                           onPressed: () {
                             Navigator.of(context).pop();
                           })),
@@ -270,32 +273,174 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
         });
   }
 
+  Widget _profileFull(String files) {
+    return GestureDetector(
+      child: Center(
+        child: Hero(
+          tag: 'imageHero$files',
+          child: Image.network(
+            files,
+            fit: BoxFit.cover,
+            loadingBuilder: (BuildContext context, Widget child,
+                ImageChunkEvent loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Center(
+                child: CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes
+                      : null,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+      },
+    );
+  }
+
   Widget _profile(BuildContext context) {
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
           return Container(
-            height: 400,
+            height: 500,
             child: Column(
               children: <Widget>[
-                Stack(children: [
-                  Container(
-                    width: double.infinity,
-                    height: 56.0,
+                Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: 56.0,
+                      child: Center(
+                          child: Text('ข้อมูลผู้ป่วย') // Your desired title
+                          ),
+                    ),
+                    Positioned(
+                        left: 0.0,
+                        top: 5.0,
+                        child: IconButton(
+                            icon: Icon(Icons.close), // Your desired icon
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            }))
+                  ],
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: SingleChildScrollView(
+                    dragStartBehavior: DragStartBehavior.start,
+                    scrollDirection: Axis.vertical,
                     child: Center(
-                        child: Text('ข้อมูลผู้ป่วย') // Your desired title
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            GestureDetector(
+                              child: Hero(
+                                tag: 'imageHero${charts_info['profile']}',
+                                child: CircleAvatar(
+                                  radius: 70,
+                                  backgroundImage:
+                                      NetworkImage(charts_info['profile']),
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) {
+                                  return _profileFull(charts_info['profile']);
+                                }));
+                              },
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'สถานะ: ',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                charts_info['status'] == 'Activate'
+                                    ? Row(
+                                        children: <Widget>[
+                                          Text(
+                                            'อยู่ระหว่างการรักษา ',
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                          new IconTheme(
+                                            data: new IconThemeData(
+                                                color: Colors.red),
+                                            child: new Icon(Icons.domain),
+                                          ),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: <Widget>[
+                                          Text(
+                                            'สิ้นสุดการรักษา ',
+                                            style:
+                                                TextStyle(color: Colors.green),
+                                          ),
+                                          new IconTheme(
+                                            data: new IconThemeData(
+                                                color: Colors.green),
+                                            child: new Icon(Icons.home),
+                                          ),
+                                        ],
+                                      ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text(
+                              '$prefix $name $surname',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'HN $hn',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 15.0,
+                            ),
+                            Text(
+                              'เบอร์ติดต่อ: ${charts_info['phone']}',
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text(
+                              'ที่อยู่: ${charts_info['address']}',
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                    ),
                   ),
-                  Positioned(
-                      left: 0.0,
-                      top: 5.0,
-                      child: IconButton(
-                          icon: Icon(Icons.arrow_back), // Your desired icon
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          }))
-                ]),
+                ),
               ],
             ),
           );
