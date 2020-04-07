@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:hospitalapp/screens/login_screen.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(HomePage());
 }
 
