@@ -282,7 +282,7 @@ class _AddChartDescription extends State<AddChartDescription> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://192.168.101.68/api/v1/charts/stored',
+      'http://159.65.14.78/api/v1/charts/stored',
       data: data,
     );
     if (response.statusCode != 200) {

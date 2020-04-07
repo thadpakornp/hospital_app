@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://192.168.101.63/api/v1/users/updated',
+      'http://159.65.14.78/api/v1/users/updated',
       data: data,
     );
     setState(() {

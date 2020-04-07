@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class ApiProvider {
   ApiProvider();
 
-  String endPoint = 'http://172.21.34.137/api/v1';
+  String endPoint = 'http://159.65.14.78/api/v1';
 
   Future<http.Response> doLogin(String username, String password) async {
     String _url = '$endPoint/login';
