@@ -177,17 +177,19 @@ class _UploadScreenState extends State<UploadScreen> {
     var image = await ImagePicker.pickImage(source: source);
     setState(() {
       _image = image;
-      Navigator.pop(context);
     });
+    Navigator.pop(context);
   }
 
   Future getVideo(ImageSource source) async {
+    await SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.landscapeLeft]);
     var image = await ImagePicker.pickVideo(source: source);
-
     setState(() {
       _image = image;
-      Navigator.pop(context);
     });
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    Navigator.pop(context);
   }
 
   //============================================================= API Area to upload image
