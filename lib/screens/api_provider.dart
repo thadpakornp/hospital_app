@@ -5,13 +5,15 @@ import 'package:http/http.dart' as http;
 class ApiProvider {
   ApiProvider();
 
-  String endPoint = 'http://159.65.14.78/api/v1';
+  String endPoint = 'https://devimatthio.ddns.net/api/v1';
 
-  Future<http.Response> doLogin(String username, String password) async {
+  Future<http.Response> doLogin(
+      String username, String password, String device_token) async {
     String _url = '$endPoint/login';
     var body = {
       'email': username,
       'password': password,
+      'device_token': device_token,
     };
 
     return http.post(_url, body: body);
@@ -128,6 +130,27 @@ class ApiProvider {
     String _url = '$endPoint/prefix';
 
     return http.get(_url);
+  }
+
+  Future<http.Response> sendNotifyToWeb(String token) async {
+    String _url = '$endPoint/charts/stw';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    return http.get(_url, headers: headers);
+  }
+
+  Future<http.Response> sendNotifyToWebAndMobile(String token, int id) async {
+    String _url = '$endPoint/charts/stwsb';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    var bodys = {
+      'id': '$id',
+    };
+    return http.post(_url, body: bodys, headers: headers);
   }
 
   Future<http.Response> changePassword(String token, String oldPassword,

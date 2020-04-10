@@ -231,6 +231,7 @@ class _AddChartDescription extends State<AddChartDescription> {
           if (response.statusCode == 200) {
             var jsonResponse = json.decode(response.body);
             if (jsonResponse['code'] == '200') {
+              await apiProvider.sendNotifyToWebAndMobile(token, id);
               Navigator.pop(context);
             } else {
               final snackBar = SnackBar(content: Text(jsonResponse['data']));
@@ -285,12 +286,13 @@ class _AddChartDescription extends State<AddChartDescription> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://159.65.14.78/api/v1/charts/stored',
+      'https://devimatthio.ddns.net/api/v1/charts/stored',
       data: data,
     );
     if (response.statusCode != 200) {
       return null;
     } else {
+      await apiProvider.sendNotifyToWebAndMobile(token, id);
       final res = response.data;
       return res;
     }

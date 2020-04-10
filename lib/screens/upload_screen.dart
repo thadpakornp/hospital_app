@@ -7,12 +7,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/map_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
-import 'package:geolocator/geolocator.dart';
 
 import 'chewie_list_item.dart';
 
@@ -228,6 +228,7 @@ class _UploadScreenState extends State<UploadScreen> {
             if (jsonResponse['code'] == '200') {
               _resetState();
             }
+            await apiProvider.sendNotifyToWeb(token);
             final snackBar = SnackBar(content: Text(jsonResponse['data']));
             Scaffold.of(context).showSnackBar(snackBar);
           } else {
@@ -293,12 +294,13 @@ class _UploadScreenState extends State<UploadScreen> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://159.65.14.78/api/v1/charts/uploaded',
+      'https://devimatthio.ddns.net/api/v1/charts/uploaded',
       data: data,
     );
     if (response.statusCode != 200) {
       return null;
     } else {
+      await apiProvider.sendNotifyToWeb(token);
       _resetState();
       final res = response.data;
       return res;

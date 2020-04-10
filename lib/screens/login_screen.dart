@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -13,6 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  String device_token;
   ApiProvider apiProvider = ApiProvider();
   final storage = new FlutterSecureStorage();
   final TextEditingController ctrlEmail = TextEditingController();
@@ -23,13 +26,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
 
   Future doLogin() async {
+    initialFCM();
     setState(() {
       isLoading = true;
     });
 
     try {
-      final response =
-          await apiProvider.doLogin(ctrlEmail.text, ctrlPassword.text);
+      final response = await apiProvider.doLogin(
+          ctrlEmail.text, ctrlPassword.text, device_token);
       setState(() {
         isLoading = false;
       });
@@ -68,6 +72,35 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+  }
+
+  Future initialFCM() async {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        //ได้รับ push notify จาก FCM
+        print("onMessage: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        //เมื่อกด notify แล้วไปที่ไหน
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        //คล้ายกับ OnLauncher
+        print("onResume: $message");
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(
+            sound: true, badge: true, alert: true, provisional: true));
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+    _firebaseMessaging.getToken().then((String token) {
+      setState(() {
+        device_token = token;
+      });
+    });
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:async';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://159.65.14.78/api/v1/users/updated',
+      'https://devimatthio.ddns.net/api/v1/users/updated',
       data: data,
     );
     setState(() {
