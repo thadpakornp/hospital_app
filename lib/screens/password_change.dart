@@ -35,15 +35,15 @@ class _passwordChangeState extends State<passwordChange> {
           _resetState();
         }
         _scaffoldKey.currentState
-            .showSnackBar(SnackBar(content: Text(jsonResponse['data'])));
+            .showSnackBar(new SnackBar(content: Text(jsonResponse['data'])));
       } else {
         _scaffoldKey.currentState
-            .showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด')));
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
       print(e);
-      _scaffoldKey.currentState
-          .showSnackBar(SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/home_screen.dart';
@@ -16,8 +15,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   String device_token;
   ApiProvider apiProvider = ApiProvider();
   final storage = new FlutterSecureStorage();
@@ -27,29 +24,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   bool isLoading = false;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-  void initFirebaseMessaging() async {
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        //ได้รับ push notify จาก FCM
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        //เมื่อกด notify แล้วไปที่ไหน
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        //คล้ายกับ OnLauncher
-        print("onResume: $message");
-      },
-    );
+  Future initFirebaseMessaging() async {
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(
             sound: true, badge: true, alert: true, provisional: true));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
     _firebaseMessaging.getToken().then((String token) {
       setState(() {
         device_token = token;
@@ -89,8 +69,8 @@ class _LoginScreenState extends State<LoginScreen> {
         final status = json.decode(response.body);
         if (status['code'] != '200') {
           //error
-          final snackBar = SnackBar(content: Text(status['data']));
-          _scaffoldKey.currentState.showSnackBar(snackBar);
+          _scaffoldKey.currentState
+              .showSnackBar(new SnackBar(content: Text(status['data'])));
         } else {
           await storage.write(key: 'token', value: status['data']);
           Navigator.pushReplacement(
@@ -105,8 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         isLoading = false;
       });
-      final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
     }
   }
 

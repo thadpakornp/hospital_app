@@ -30,20 +30,12 @@ Future doLogout(BuildContext context) async {
         ),
       );
     } else {
-      final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
     }
   } catch (error) {
-    print(error);
     _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Row(
-          children: <Widget>[
-            new Text('ไม่สามารถเชื่อมต่อ API ได้'),
-          ],
-        ),
-      ),
-    );
+        new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
   }
 }
 

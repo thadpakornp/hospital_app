@@ -38,13 +38,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           prefixs = jsonResponse['data'];
         });
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
       print(e);
-      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 
@@ -64,13 +64,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _mySelection = profile['prefix']['id'];
         });
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
       print(e);
-      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 
@@ -167,15 +167,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _getProfile();
           _getPrefix();
         });
-        final snackBar = SnackBar(content: Text(rs['data']));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text(rs['data'])));
       } else {
-        final snackBar = SnackBar(content: Text(rs['data']));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text(rs['data'])));
       }
     } else {
-      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 

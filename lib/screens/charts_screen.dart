@@ -29,12 +29,12 @@ class _ChartsScreenState extends State<ChartsScreen> {
           charts = jsonResponse['data'];
         });
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (error) {
-      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 

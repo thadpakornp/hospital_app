@@ -51,15 +51,15 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
         setState(() {
           _getChart();
         });
-        final snackBar = SnackBar(content: Text('สิ้นสุดการรักษาแล้ว'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('สิ้นสุดการรักษาแล้ว')));
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (error) {
-      final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('เชื่อมต่อ API ไม่ได้')));
     }
   }
 
@@ -73,19 +73,19 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
           setState(() {
             _getChart();
           });
-          final snackBar = SnackBar(content: Text('ลบเรียบร้อยแล้ว'));
-          _scaffoldKey.currentState.showSnackBar(snackBar);
+          _scaffoldKey.currentState
+              .showSnackBar(new SnackBar(content: Text('ลบเรียบร้อยแล้ว')));
         } else {
-          final snackBar = SnackBar(content: Text(jsonRs['data']));
-          _scaffoldKey.currentState.showSnackBar(snackBar);
+          _scaffoldKey.currentState
+              .showSnackBar(new SnackBar(content: Text(jsonRs['data'])));
         }
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (error) {
-      final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('เชื่อมต่อ API ไม่ได้')));
     }
   }
 
@@ -110,12 +110,12 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
           charts_date = jsonResponse['data']['charts_date'];
         });
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (error) {
-      final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('error')));
     }
   }
 
@@ -130,8 +130,8 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
         return articles.map((article) => Article.fromJSON(article)).toList();
       }
     } catch (error) {
-      final snackBar = SnackBar(content: Text('เชื่อมต่อ API ไม่ได้'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('เชื่อมต่อ API ไม่ได้')));
     }
   }
 

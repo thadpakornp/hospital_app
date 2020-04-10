@@ -73,13 +73,13 @@ class _AddChartDescription extends State<AddChartDescription> {
           _images = profile['profile'];
         });
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
       print(e);
-      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 
@@ -105,9 +105,8 @@ class _AddChartDescription extends State<AddChartDescription> {
           _add();
         });
       } else {
-        final snackBar =
-            SnackBar(content: Text('กรุณาอนุญาตให้เข้าถึงที่ตั้ง'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState.showSnackBar(
+            new SnackBar(content: Text('กรุณาอนุญาตให้เข้าถึงที่ตั้ง')));
       }
     } else {
       setState(() {
@@ -201,8 +200,8 @@ class _AddChartDescription extends State<AddChartDescription> {
   //============================================================= API Area to upload image
   void _startUploading() async {
     if (_description == null && _image == null && _geolocation == null) {
-      final snackBar = SnackBar(content: Text('ไม่พบข้อมูลให้บันทึก'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(SnackBar(content: Text('ไม่พบข้อมูลให้บันทึก')));
     } else {
       if (_image != null) {
         final response = await _uploadImage(_image);
@@ -210,8 +209,8 @@ class _AddChartDescription extends State<AddChartDescription> {
           _isUploading = false;
         });
         if (response == null) {
-          final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-          _scaffoldKey.currentState.showSnackBar(snackBar);
+          _scaffoldKey.currentState
+              .showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด')));
         } else {
           Navigator.pop(context);
         }
@@ -234,12 +233,12 @@ class _AddChartDescription extends State<AddChartDescription> {
               await apiProvider.sendNotifyToWebAndMobile(token, id);
               Navigator.pop(context);
             } else {
-              final snackBar = SnackBar(content: Text(jsonResponse['data']));
-              _scaffoldKey.currentState.showSnackBar(snackBar);
+              _scaffoldKey.currentState
+                  .showSnackBar(SnackBar(content: Text(jsonResponse['data'])));
             }
           } else {
-            final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-            _scaffoldKey.currentState.showSnackBar(snackBar);
+            _scaffoldKey.currentState
+                .showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด')));
           }
         } catch (error) {
           setState(() {

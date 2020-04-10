@@ -61,13 +61,12 @@ class _UploadScreenState extends State<UploadScreen> {
           _images = profile['profile'];
         });
       } else {
-        final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
-      print(e);
-      final snackBar = SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-      _scaffoldKey.currentState.showSnackBar(snackBar);
+      _scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
     }
   }
 
@@ -100,9 +99,8 @@ class _UploadScreenState extends State<UploadScreen> {
           _add();
         });
       } else {
-        final snackBar =
-            SnackBar(content: Text('กรุณาอนุญาตให้เข้าถึงที่ตั้ง'));
-        _scaffoldKey.currentState.showSnackBar(snackBar);
+        _scaffoldKey.currentState.showSnackBar(
+            new SnackBar(content: Text('กรุณาอนุญาตให้เข้าถึงที่ตั้ง')));
       }
     } else {
       setState(() {
@@ -195,8 +193,8 @@ class _UploadScreenState extends State<UploadScreen> {
   //============================================================= API Area to upload image
   void _startUploading() async {
     if (_description == null && _image == null && _geolocation == null) {
-      final snackBar = SnackBar(content: Text('ไม่พบข้อมูลให้บันทึก'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('ไม่พบข้อมูลให้บันทึก')));
     } else {
       if (_image != null) {
         final response = await _uploadImage(_image);
@@ -204,11 +202,11 @@ class _UploadScreenState extends State<UploadScreen> {
           _isUploading = false;
         });
         if (response == null) {
-          final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-          Scaffold.of(context).showSnackBar(snackBar);
+          _scaffoldKey.currentState
+              .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
         } else {
-          final snackBar = SnackBar(content: Text(response['data']));
-          Scaffold.of(context).showSnackBar(snackBar);
+          _scaffoldKey.currentState
+              .showSnackBar(new SnackBar(content: Text(response['data'])));
         }
       } else {
         //Call Api image is null
@@ -229,19 +227,18 @@ class _UploadScreenState extends State<UploadScreen> {
               _resetState();
             }
             await apiProvider.sendNotifyToWeb(token);
-            final snackBar = SnackBar(content: Text(jsonResponse['data']));
-            Scaffold.of(context).showSnackBar(snackBar);
+            _scaffoldKey.currentState.showSnackBar(
+                new SnackBar(content: Text(jsonResponse['data'])));
           } else {
-            final snackBar = SnackBar(content: Text('เกิดข้อผิดพลาด'));
-            Scaffold.of(context).showSnackBar(snackBar);
+            _scaffoldKey.currentState
+                .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
           }
         } catch (error) {
           setState(() {
             _isUploading = false;
           });
-          final snackBar =
-              SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้'));
-          Scaffold.of(context).showSnackBar(snackBar);
+          _scaffoldKey.currentState.showSnackBar(
+              new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
         }
       }
     }
