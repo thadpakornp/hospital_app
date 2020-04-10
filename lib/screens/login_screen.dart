@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/home_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -15,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   String device_token;
   ApiProvider apiProvider = ApiProvider();
   final storage = new FlutterSecureStorage();
@@ -25,8 +28,53 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isLoading = false;
 
+  void initFirebaseMessaging() async {
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        //ได้รับ push notify จาก FCM
+        print("onMessage: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        //เมื่อกด notify แล้วไปที่ไหน
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        //คล้ายกับ OnLauncher
+        print("onResume: $message");
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(
+            sound: true, badge: true, alert: true, provisional: true));
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
+      print("Settings registered: $settings");
+    });
+    _firebaseMessaging.getToken().then((String token) {
+      setState(() {
+        device_token = token;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initFirebaseMessaging();
+    checkPermission();
+    checkToken();
+  }
+
+  Future checkPermission() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+      Permission.storage,
+      Permission.microphone,
+      Permission.notification
+    ].request();
+  }
+
   Future doLogin() async {
-    initialFCM();
     setState(() {
       isLoading = true;
     });
@@ -72,42 +120,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-  }
-
-  Future initialFCM() async {
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        //ได้รับ push notify จาก FCM
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        //เมื่อกด notify แล้วไปที่ไหน
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        //คล้ายกับ OnLauncher
-        print("onResume: $message");
-      },
-    );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: true));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-    _firebaseMessaging.getToken().then((String token) {
-      setState(() {
-        device_token = token;
-      });
-    });
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    checkToken();
   }
 
   @override

@@ -5,15 +5,15 @@ import 'package:http/http.dart' as http;
 class ApiProvider {
   ApiProvider();
 
-  String endPoint = 'https://devimatthio.ddns.net/api/v1';
+  String endPoint = 'http://159.65.14.78/api/v1';
 
   Future<http.Response> doLogin(
       String username, String password, String device_token) async {
     String _url = '$endPoint/login';
     var body = {
-      'email': username,
-      'password': password,
-      'device_token': device_token,
+      'email': '$username',
+      'password': '$password',
+      'device_token': '$device_token',
     };
 
     return http.post(_url, body: body);

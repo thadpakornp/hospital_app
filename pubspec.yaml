@@ -35,6 +35,10 @@ dependencies:
   google_maps_flutter: ^0.5.25+3
   firebase_messaging: ^6.0.13
   flutter_speed_dial: ^1.2.5
+  flutter_local_notifications: ^1.4.0
+  firebase_core: ^0.4.4+3
+  path_provider: ^1.6.5
+  permission_handler: ^5.0.0+hotfix.3
 
 dev_dependencies:
   flutter_test:

@@ -294,7 +294,7 @@ class _UploadScreenState extends State<UploadScreen> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'https://devimatthio.ddns.net/api/v1/charts/uploaded',
+      'http://159.65.14.78/api/v1/charts/uploaded',
       data: data,
     );
     if (response.statusCode != 200) {

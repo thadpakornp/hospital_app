@@ -168,19 +168,22 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
 
   Widget _image(String files) {
     return GestureDetector(
-      child: Hero(
-        tag: 'imageHero$files',
-        child: Image.network(files),
+      child: Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: Hero(
+          tag: 'imageHero$files',
+          child: Image.network(files),
+        ),
       ),
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (_) {
-          return DetailScreen(files);
+          return _detailScreen(files);
         }));
       },
     );
   }
 
-  Widget DetailScreen(String files) {
+  Widget _detailScreen(String files) {
     final String file = files.replaceAll('temnails', 'photos');
     return GestureDetector(
       child: Center(
