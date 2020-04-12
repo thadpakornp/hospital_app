@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -30,21 +31,23 @@ class _HomeScreenState extends State<HomeScreen> {
         showNotification(message);
       },
       onLaunch: (Map<String, dynamic> message) async {
+        int id = int.tryParse(message['data']['id']);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChartsUserScreen(
-              message['data']['key'],
+              id,
             ),
           ),
         );
       },
       onResume: (Map<String, dynamic> message) async {
+        int id = int.tryParse(message['data']['id']);
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChartsUserScreen(
-              message['data']['key'],
+              id,
             ),
           ),
         );
@@ -117,6 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
         message['notification']['title'],
         message['notification']['body'],
         platform,
-        payload: message['data']['key']);
+        payload: message['data']['id']);
   }
 }
