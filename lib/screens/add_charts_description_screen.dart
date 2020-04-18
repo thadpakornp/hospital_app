@@ -58,6 +58,11 @@ class _AddChartDescription extends State<AddChartDescription> {
     _getProfile();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future _getProfile() async {
     String token = await storage.read(key: 'token');
     try {
@@ -186,14 +191,10 @@ class _AddChartDescription extends State<AddChartDescription> {
   }
 
   Future getVideo(ImageSource source) async {
-    await SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeLeft]);
     var image = await ImagePicker.pickVideo(source: source);
-
     setState(() {
       _image = image;
     });
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     Navigator.pop(context);
   }
 

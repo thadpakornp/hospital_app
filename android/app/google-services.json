@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "687078756305",
+    "firebase_url": "https://pushnotifyhospital.firebaseio.com",
+    "project_id": "pushnotifyhospital",
+    "storage_bucket": "pushnotifyhospital.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:687078756305:android:b462dc23004be2039d9af0",
+        "android_client_info": {
+          "package_name": "com.imatthio.hospitalapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "687078756305-sppd7qjb9lvlv087vj7h29gom1m92vks.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQFQST-_lbqtkXSWF_BGNv1-ENBA9Kq_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "687078756305-sppd7qjb9lvlv087vj7h29gom1m92vks.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

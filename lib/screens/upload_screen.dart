@@ -77,6 +77,11 @@ class _UploadScreenState extends State<UploadScreen> {
     _getProfile();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future _getLocation() async {
     if (_geolocation == null) {
       await Geolocator()
@@ -180,13 +185,10 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future getVideo(ImageSource source) async {
-    await SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.landscapeLeft]);
     var image = await ImagePicker.pickVideo(source: source);
     setState(() {
       _image = image;
     });
-    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     Navigator.pop(context);
   }
 

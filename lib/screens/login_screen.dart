@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/home_screen.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -41,17 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     initFirebaseMessaging();
-    checkPermission();
     checkToken();
-  }
-
-  Future checkPermission() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.location,
-      Permission.storage,
-      Permission.microphone,
-      Permission.notification
-    ].request();
   }
 
   Future doLogin() async {

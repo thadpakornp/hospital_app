@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -455,6 +456,11 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
     // TODO: implement initState
     super.initState();
     _getChart();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void _showDialogDeleted(int id) {
