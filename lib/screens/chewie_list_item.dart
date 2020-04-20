@@ -15,7 +15,6 @@ class ChewieListItem extends StatefulWidget {
 
   @override
   _ChewieListItemState createState() => _ChewieListItemState();
-
 }
 
 class _ChewieListItemState extends State<ChewieListItem> {
@@ -29,14 +28,14 @@ class _ChewieListItemState extends State<ChewieListItem> {
       videoPlayerController: widget.videoPlayerController,
       aspectRatio: 3 / 2,
       // Prepare the video to be played and display the first frame
-      autoInitialize: false,
+      autoInitialize: true,
       looping: widget.looping,
       // Errors can occur for example when trying to play a video
       // from a non-existent URL
       errorBuilder: (context, errorMessage) {
         return Center(
           child: Text(
-            errorMessage,
+            'ไม่สามารถโหลดวิดีโอได้',
             style: TextStyle(color: Colors.white),
           ),
         );

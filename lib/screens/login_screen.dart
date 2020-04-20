@@ -96,6 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       key: _scaffoldKey,
       body: Stack(
+        alignment: Alignment.center,
         fit: StackFit.expand,
         children: <Widget>[
           Container(
@@ -103,72 +104,88 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           ListView(
             children: <Widget>[
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image(
-                      width: 200.0,
-                      height: 200.0,
-                      image: AssetImage('assets/images/logo.png'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(40.0),
-                      child: Form(
-                        child: Column(
-                          children: <Widget>[
-                            TextFormField(
-                              controller: ctrlEmail,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon: Icon(Icons.email),
-                                filled: true,
-                                fillColor: Colors.white70,
+              Padding(
+                padding: const EdgeInsets.only(top: 50.0),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Image(
+                        width: 200.0,
+                        height: 200.0,
+                        image: AssetImage('assets/images/logo.png'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(40.0),
+                        child: Form(
+                          child: Column(
+                            children: <Widget>[
+                              TextFormField(
+                                controller: ctrlEmail,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  labelText: 'อีเมลผู้ใช้งาน',
+                                  prefixIcon: Icon(Icons.email),
+                                  filled: true,
+                                  fillColor: Colors.white70,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            TextFormField(
-                              controller: ctrlPassword,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                labelText: 'Password',
-                                prefixIcon: Icon(Icons.vpn_key),
-                                filled: true,
-                                fillColor: Colors.white70,
+                              SizedBox(
+                                height: 10.0,
                               ),
-                            ),
-                            SizedBox(
-                              height: 20.0,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: isLoading
-                                  ? CircularProgressIndicator()
-                                  : null,
-                            ),
-                            Material(
-                              borderRadius:
-                                  BorderRadius.all(const Radius.circular(30.0)),
-                              shadowColor: Colors.yellowAccent.shade100,
-                              elevation: 5.0,
-                              child: MaterialButton(
-                                minWidth: 290.0,
-                                height: 55.0,
+                              TextFormField(
+                                controller: ctrlPassword,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  labelText: 'รหัสผ่าน',
+                                  prefixIcon: Icon(Icons.vpn_key),
+                                  filled: true,
+                                  fillColor: Colors.white70,
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20.0,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: isLoading
+                                    ? CircularProgressIndicator()
+                                    : null,
+                              ),
+                              Material(
+                                borderRadius: BorderRadius.all(
+                                    const Radius.circular(30.0)),
+                                shadowColor: Colors.yellowAccent.shade100,
+                                elevation: 5.0,
+                                child: MaterialButton(
+                                  minWidth: 290.0,
+                                  height: 55.0,
+                                  onPressed: () {
+                                    doLogin();
+                                  },
+                                  color: Colors.yellow,
+                                  child: Text('เข้าสู่ระบบ'),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20.0,
+                              ),
+                              RaisedButton(
                                 onPressed: () {
-                                  doLogin();
+                                  _scaffoldKey.currentState.showSnackBar(
+                                      new SnackBar(
+                                          content: Text(
+                                              'กรุณาดำเนินการผ่านทางหน้าเว็บไซต์')));
                                 },
-                                color: Colors.yellow,
-                                child: Text('Login'),
+                                child: Text('ลืมรหัสผ่าน?'),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

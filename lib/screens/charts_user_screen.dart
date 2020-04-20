@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +139,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
     final String file = files.replaceAll('temnails', 'photos');
     return ChewieListItem(
       videoPlayerController: VideoPlayerController.network('$file'),
+      looping: false,
     );
   }
 
@@ -618,32 +618,37 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                               trailing: Wrap(
                                 spacing: 0,
                                 children: <Widget>[
-                                  IconButton(
-                                    alignment: Alignment.centerRight,
-                                    icon: Icon(
-                                      Icons.near_me,
-                                      color: (chart_lasted[index]
-                                                  ['g_location_lat']) !=
-                                              null
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      (chart_lasted[index]['g_location_lat']) !=
-                                              null
-                                          ? Navigator.of(context).push(MaterialPageRoute(
-                                              builder: (context) => chartsMapScreen(
-                                                  num.tryParse(chart_lasted[index]
-                                                          ['g_location_lat'])
-                                                      .toDouble(),
-                                                  num.tryParse(chart_lasted[index]
-                                                          ['g_location_long'])
-                                                      .toDouble())))
-                                          : _scaffoldKey.currentState
-                                              .showSnackBar(SnackBar(
-                                                  content: Text('ไม่พบเส้นทาง')));
-                                    },
-                                  ),
+                                  chart_lasted[index]['g_location_lat'] != null
+                                      ? IconButton(
+                                          alignment: Alignment.centerRight,
+                                          icon: Icon(
+                                            Icons.near_me,
+                                            color: (chart_lasted[index]
+                                                        ['g_location_lat']) !=
+                                                    null
+                                                ? Colors.blue
+                                                : Colors.grey,
+                                          ),
+                                          onPressed: () {
+                                            (chart_lasted[
+                                                            index]
+                                                        ['g_location_lat']) !=
+                                                    null
+                                                ? Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            chartsMapScreen(
+                                                                num.tryParse(chart_lasted[index]['g_location_lat'])
+                                                                    .toDouble(),
+                                                                num.tryParse(chart_lasted[index]['g_location_long'])
+                                                                    .toDouble())))
+                                                : _scaffoldKey.currentState
+                                                    .showSnackBar(SnackBar(
+                                                        content:
+                                                            Text('ไม่พบเส้นทาง')));
+                                          },
+                                        )
+                                      : Icon(null),
                                   IconButton(
                                     alignment: Alignment.centerRight,
                                     icon: Icon(
@@ -668,13 +673,15 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    '${chart_lasted[index]['description']}',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
+                                  chart_lasted[index]['description'] != null
+                                      ? Text(
+                                          '${chart_lasted[index]['description']}',
+                                          style: TextStyle(fontSize: 14),
+                                        )
+                                      : Text(''),
                                   chart_lasted[index]['files'] != null
                                       ? Container(
-                                          height: 200,
+                                          height: 230,
                                           child:
                                               _files(chart_lasted[index]['id']),
                                         )
