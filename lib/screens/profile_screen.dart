@@ -14,6 +14,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String endPoint = 'https://suratstroke.com/';
   ApiProvider apiProvider = ApiProvider();
   var profile;
   bool isLoding = true;
@@ -42,9 +43,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
-      print(e);
-      _scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -68,9 +68,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
-      print(e);
-      _scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -154,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://159.65.14.78/api/v1/users/updated',
+      '${endPoint}api/v1/users/updated',
       data: data,
     );
     setState(() {
@@ -163,19 +162,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (response.statusCode == 200) {
       var rs = response.data;
       if (rs['code'] == '200') {
-        setState(() {
-          _getProfile();
-          _getPrefix();
-        });
-        _scaffoldKey.currentState
-            .showSnackBar(new SnackBar(content: Text(rs['data'])));
+        Navigator.of(context).pop(rs['data']);
       } else {
         _scaffoldKey.currentState
             .showSnackBar(new SnackBar(content: Text(rs['data'])));
       }
     } else {
-      _scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -185,6 +179,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('แก้ไขข้อมูลผู้ใช้งาน'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),

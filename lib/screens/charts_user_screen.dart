@@ -12,9 +12,8 @@ import 'package:hospitalapp/resources/chart_files.dart';
 import 'package:hospitalapp/screens/add_charts_description_screen.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/charts_map_screen.dart';
-import "package:video_player/video_player.dart";
-
-import 'chewie_list_item.dart';
+import 'package:hospitalapp/screens/chewie_list_item.dart';
+import 'package:video_player/video_player.dart';
 
 class ChartsUserScreen extends StatefulWidget {
   int id;
@@ -59,7 +58,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
       }
     } catch (error) {
       _scaffoldKey.currentState
-          .showSnackBar(new SnackBar(content: Text('เชื่อมต่อ API ไม่ได้')));
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -85,7 +84,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
       }
     } catch (error) {
       _scaffoldKey.currentState
-          .showSnackBar(new SnackBar(content: Text('เชื่อมต่อ API ไม่ได้')));
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -131,7 +130,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
       }
     } catch (error) {
       Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('เชื่อมต่อ API ไม่ได้')));
+          .showSnackBar(SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -574,8 +573,16 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: Colors.grey,
       appBar: AppBar(
         title: Text('$prefix $name $surname HN $hn'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.calendar_today),
@@ -596,15 +603,16 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
           ? Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: _getChart,
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                child: ListView.builder(
-                  itemCount: chart_lasted.length ?? 0,
-                  itemBuilder: (context, int index) {
-                    return Card(
-                      child: Column(
-                        children: <Widget>[
-                          Container(
+              child: ListView.builder(
+                itemCount: chart_lasted.length ?? 0,
+                itemBuilder: (context, int index) {
+                  return Card(
+                    elevation: 10,
+                    child: Column(
+                      children: <Widget>[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(30.0),
+                          child: Container(
                             color: Colors.white,
                             child: ListTile(
                               leading: CircleAvatar(
@@ -664,63 +672,63 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                               ),
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(5.0),
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  chart_lasted[index]['description'] != null
-                                      ? Text(
-                                          '${chart_lasted[index]['description']}',
-                                          style: TextStyle(fontSize: 14),
-                                        )
-                                      : Text(''),
-                                  chart_lasted[index]['files'] != null
-                                      ? Container(
-                                          height: 230,
-                                          child:
-                                              _files(chart_lasted[index]['id']),
-                                        )
-                                      : chart_lasted[index]['g_location_lat'] !=
-                                              null
-                                          ? Container(
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              height: 200.0,
-                                              child: GoogleMap(
-                                                mapType: MapType.hybrid,
-                                                initialCameraPosition:
-                                                    CameraPosition(
-                                                  target: LatLng(
-                                                      num.tryParse(chart_lasted[
-                                                                      index][
-                                                                  'g_location_lat'])
-                                                              .toDouble() ??
-                                                          13.7894338,
-                                                      num.tryParse(chart_lasted[
-                                                                      index][
-                                                                  'g_location_long'])
-                                                              .toDouble() ??
-                                                          100.5858793),
-                                                  zoom: 14.4746,
-                                                ),
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(5.0),
+                          color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                chart_lasted[index]['description'] != null
+                                    ? Text(
+                                        '${chart_lasted[index]['description']}',
+                                        style: TextStyle(fontSize: 14),
+                                      )
+                                    : Text(''),
+                                chart_lasted[index]['files'] != null
+                                    ? Container(
+                                        height: 230,
+                                        child:
+                                            _files(chart_lasted[index]['id']),
+                                      )
+                                    : chart_lasted[index]['g_location_lat'] !=
+                                            null
+                                        ? Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            height: 200.0,
+                                            child: GoogleMap(
+                                              mapType: MapType.hybrid,
+                                              initialCameraPosition:
+                                                  CameraPosition(
+                                                target: LatLng(
+                                                    num.tryParse(chart_lasted[
+                                                                    index][
+                                                                'g_location_lat'])
+                                                            .toDouble() ??
+                                                        13.7894338,
+                                                    num.tryParse(chart_lasted[
+                                                                    index][
+                                                                'g_location_long'])
+                                                            .toDouble() ??
+                                                        100.5858793),
+                                                zoom: 14.4746,
                                               ),
-                                            )
-                                          : Container(),
-                                ],
-                              ),
+                                            ),
+                                          )
+                                        : Container(),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
       floatingActionButton: chart_status == 'Activate' ? _getFAB() : null,

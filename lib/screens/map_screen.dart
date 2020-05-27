@@ -20,7 +20,7 @@ class _mapScreenState extends State<mapScreen> {
 
   Completer<GoogleMapController> _controller = Completer();
 
-  static final CameraPosition myPosition = CameraPosition(
+  final CameraPosition myPosition = CameraPosition(
     target: LatLng(13.7894338, 100.5858793),
     zoom: 14.4746,
   );
@@ -47,6 +47,7 @@ class _mapScreenState extends State<mapScreen> {
       _lat = position.latitude ?? 13.7248936;
       _lng = position.longitude ?? 100.3529157;
     });
+    gotoCurrectPosition();
   }
 
   void _add() {

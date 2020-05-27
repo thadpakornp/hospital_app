@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hospitalapp/screens/charts_screen.dart';
 import 'package:hospitalapp/screens/charts_user_screen.dart';
-import 'package:hospitalapp/screens/upload_screen.dart';
+import 'package:hospitalapp/screens/chat_screen.dart';
 import 'package:hospitalapp/screens/user_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,8 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 0;
   List pages = [
     ChartsScreen(),
-    UploadScreen(),
     UserScreen(),
+    ChatScreen(),
   ];
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -81,31 +81,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget bottomNavBar = BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (int index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.accessibility),
-            title: Text('ระเบียนผู้ป่วย'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            title: Text('บันทึกข้อมูลเข้าระบบ'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            title: Text('ตั้งค่า'),
-          ),
-        ]);
-
     return Scaffold(
       body: pages[currentIndex],
-      bottomNavigationBar: bottomNavBar,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        elevation: 5,
+        backgroundColor: Colors.green,
+        child: Icon(Icons.message),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(),
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 7.0,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            IconButton(
+              icon: Icon(Icons.view_list,
+                  color: currentIndex == 0 ? Colors.pink : Colors.black45),
+              onPressed: () {
+                setState(() {
+                  currentIndex = 0;
+                });
+              },
+            ),
+            SizedBox(width: 25),
+            IconButton(
+              icon: Icon(Icons.person_outline,
+                  color: currentIndex == 1 ? Colors.pink : Colors.black45),
+              onPressed: () {
+                setState(() {
+                  currentIndex = 1;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 

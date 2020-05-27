@@ -11,9 +11,7 @@ class HomePage extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         fontFamily: 'Saraban',
-        scaffoldBackgroundColor: Colors.white70,
-        primaryColor: Colors.pink,
-        accentColor: Colors.amber,
+        primarySwatch: Colors.deepOrange,
       ),
       title: 'IMATTHIO',
       home: LoginScreen(),

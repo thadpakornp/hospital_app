@@ -5,7 +5,35 @@ import 'package:http/http.dart' as http;
 class ApiProvider {
   ApiProvider();
 
-  String endPoint = 'http://159.65.14.78/api/v1';
+  String endPoint = 'https://suratstroke.com/api/v1';
+
+  Future<http.Response> getID(String token) async {
+    String _url = '$endPoint/users/id';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+
+    return http.post(_url, headers: headers);
+  }
+
+  Future<http.Response> checkToken(String token) async {
+    String _url = '$endPoint/users/token';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+
+    return http.post(_url, headers: headers);
+  }
+
+  Future<http.Response> doForget(String username) async {
+    String _url = '$endPoint/forget';
+    var body = {
+      'email': '$username',
+    };
+    return http.post(_url, body: body);
+  }
 
   Future<http.Response> doLogin(
       String username, String password, String device_token) async {
@@ -29,8 +57,17 @@ class ApiProvider {
     return http.post(_url, headers: headers);
   }
 
-  Future<http.Response> getCharts(String token) async {
-    String _url = '$endPoint/charts/index';
+  Future<http.Response> getCharts(String token, String status) async {
+    String _url = '$endPoint/charts/index/$status';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    return http.get(_url, headers: headers);
+  }
+
+  Future<http.Response> getChats(String token) async {
+    String _url = '$endPoint/charts/chats';
     var headers = {
       "Authorization": "Bearer $token",
       "Accept": "application/json"
@@ -49,6 +86,7 @@ class ApiProvider {
       "g_location_lat": lat == null ? null : lat.toString(),
       "g_location_long": lng == null ? null : lng.toString(),
       "description": description,
+      "type_charts": '1'
     };
     return http.post(_url, headers: headers, body: bodys);
   }

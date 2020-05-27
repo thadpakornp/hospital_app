@@ -11,6 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hospitalapp/screens/map_screen.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 import 'api_provider.dart';
@@ -26,11 +27,11 @@ class AddChartDescription extends StatefulWidget {
 }
 
 class _AddChartDescription extends State<AddChartDescription> {
+  String endPoint = 'https://suratstroke.com/';
   ApiProvider apiProvider = ApiProvider();
   int id;
 
   _AddChartDescription(this.id);
-  var _golocation;
   bool _isUploading = false;
   File _image;
   String _description;
@@ -83,35 +84,39 @@ class _AddChartDescription extends State<AddChartDescription> {
       }
     } catch (e) {
       print(e);
-      _scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
   Future _getLocation() async {
     if (_geolocation == null) {
-      await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      GeolocationStatus geolocationStatus =
-          await Geolocator().checkGeolocationPermissionStatus();
-      if (geolocationStatus.value == 2) {
-        Navigator.push(
-          context,
-          new MaterialPageRoute(builder: (context) => mapScreen()),
-        ).then((value) {
-          print(value.target.latitude);
-          setState(() {
-            _geolocation = value;
-            lat = value.target.latitude;
-            lng = value.target.longitude;
-            _lat = value.target.latitude.toStringAsFixed(6);
-            _lng = value.target.longitude.toStringAsFixed(6);
+      bool isLocationEnabled = await Geolocator().isLocationServiceEnabled();
+      if (isLocationEnabled) {
+        if (await Permission.locationAlways.request().isGranted ||
+            await Permission.locationWhenInUse.request().isGranted) {
+          Navigator.push(
+            context,
+            new MaterialPageRoute(builder: (context) => mapScreen()),
+          ).then((value) {
+            if (value != null) {
+              setState(() {
+                _geolocation = value;
+                lat = value.target.latitude;
+                lng = value.target.longitude;
+                _lat = value.target.latitude.toStringAsFixed(6);
+                _lng = value.target.longitude.toStringAsFixed(6);
+              });
+              _add();
+            }
           });
-          _add();
-        });
+        } else {
+          _scaffoldKey.currentState.showSnackBar(new SnackBar(
+              content: Text('กรุณาอนุญาตให้เข้าถึงที่ตั้งของคุณ')));
+        }
       } else {
         _scaffoldKey.currentState.showSnackBar(
-            new SnackBar(content: Text('กรุณาอนุญาตให้เข้าถึงที่ตั้ง')));
+            new SnackBar(content: Text('กรุณาเปิดการเข้าถึงที่ตั้งของคุณ')));
       }
     } else {
       setState(() {
@@ -190,6 +195,13 @@ class _AddChartDescription extends State<AddChartDescription> {
     Navigator.pop(context);
   }
 
+  Future getImageGarally(ImageSource source) async {
+    var image = await ImagePicker.pickImage(source: source);
+    setState(() {
+      _image = image;
+    });
+  }
+
   Future getVideo(ImageSource source) async {
     var image = await ImagePicker.pickVideo(source: source);
     setState(() {
@@ -223,8 +235,14 @@ class _AddChartDescription extends State<AddChartDescription> {
         String token = await storage.read(key: 'token');
 
         try {
+          String _d;
+          if (_description == null) {
+            _d = '';
+          } else {
+            _d = _description;
+          }
           final response = await apiProvider.uploadWithOutFileByID(
-              token, _description, id, lat.toString(), lng.toString());
+              token, _d, id, lat.toString(), lng.toString());
           setState(() {
             _isUploading = false;
           });
@@ -245,7 +263,8 @@ class _AddChartDescription extends State<AddChartDescription> {
           setState(() {
             _isUploading = false;
           });
-          print(error);
+          _scaffoldKey.currentState.showSnackBar(
+              new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
         }
       }
     }
@@ -286,7 +305,7 @@ class _AddChartDescription extends State<AddChartDescription> {
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers["Authorization"] = "Bearer $token";
     Response response = await dio.post(
-      'http://159.65.14.78/api/v1/charts/stored',
+      '${endPoint}api/v1/charts/stored',
       data: data,
     );
     if (response.statusCode != 200) {
@@ -377,6 +396,13 @@ class _AddChartDescription extends State<AddChartDescription> {
       backgroundColor: Colors.grey,
       appBar: AppBar(
         title: Text('เพิ่มข้อมูลการรักษา'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.send),
@@ -408,7 +434,7 @@ class _AddChartDescription extends State<AddChartDescription> {
                           setState(() {
                             isVideo = false;
                           });
-                          getImage(ImageSource.gallery);
+                          getImageGarally(ImageSource.gallery);
                         }),
                     IconButton(
                         icon: _geolocation != null

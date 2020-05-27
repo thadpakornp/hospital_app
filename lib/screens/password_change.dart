@@ -32,8 +32,9 @@ class _passwordChangeState extends State<passwordChange> {
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         if (jsonResponse['code'] == '200') {
-          _resetState();
+          Navigator.of(context).pop(jsonResponse['data']);
         }
+        _resetState();
         _scaffoldKey.currentState
             .showSnackBar(new SnackBar(content: Text(jsonResponse['data'])));
       } else {
@@ -42,8 +43,8 @@ class _passwordChangeState extends State<passwordChange> {
       }
     } catch (e) {
       print(e);
-      _scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: Text('ไม่สามารถเชื่อมต่อ API ได้')));
+      _scaffoldKey.currentState
+          .showSnackBar(new SnackBar(content: Text('ไม่พบสัญญาณอินเตอร์เน็ต')));
     }
   }
 
@@ -64,6 +65,13 @@ class _passwordChangeState extends State<passwordChange> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('เปลี่ยนรหัสผ่าน'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Card(
