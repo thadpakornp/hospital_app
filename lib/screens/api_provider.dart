@@ -170,13 +170,17 @@ class ApiProvider {
     return http.get(_url);
   }
 
-  Future<http.Response> sendNotifyToWeb(String token) async {
+  Future<http.Response> sendNotifyToWeb(
+      String token, String description) async {
     String _url = '$endPoint/charts/stw';
     var headers = {
       "Authorization": "Bearer $token",
       "Accept": "application/json"
     };
-    return http.get(_url, headers: headers);
+    var bodys = {
+      "description": description,
+    };
+    return http.post(_url, headers: headers, body: bodys);
   }
 
   Future<http.Response> sendNotifyToWebAndMobile(String token, int id) async {

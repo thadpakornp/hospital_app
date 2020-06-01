@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:hospitalapp/chats/chat_screen.dart';
 import 'package:hospitalapp/screens/charts_screen.dart';
 import 'package:hospitalapp/screens/charts_user_screen.dart';
-import 'package:hospitalapp/screens/chat_screen.dart';
 import 'package:hospitalapp/screens/user_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,25 +32,35 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       onLaunch: (Map<String, dynamic> message) async {
         int id = int.tryParse(message['data']['id']);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChartsUserScreen(
-              id,
+        if (id == 0) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ChatScreen()));
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChartsUserScreen(
+                id,
+              ),
             ),
-          ),
-        );
+          );
+        }
       },
       onResume: (Map<String, dynamic> message) async {
         int id = int.tryParse(message['data']['id']);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChartsUserScreen(
-              id,
+        if (id == 0) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => ChatScreen()));
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChartsUserScreen(
+                id,
+              ),
             ),
-          ),
-        );
+          );
+        }
       },
     );
   }

@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/forget_screen.dart';
 import 'package:hospitalapp/screens/home_screen.dart';
+import 'package:package_info/package_info.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isLoading = false;
   String device_token;
+  String _version;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -28,8 +30,18 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    _getVersion();
     initFirebaseMessaging();
     checkToken();
+  }
+
+  Future _getVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    String version = packageInfo.version;
+    setState(() {
+      _version = version;
+    });
   }
 
   Future initFirebaseMessaging() async {
@@ -253,6 +265,30 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : CircularProgressIndicator(),
+                    ),
+                  ),
+                  Spacer(),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        new Text(
+                          '\u00a9 2020 IMATTHIO Company Limited',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        new Text(
+                          'All Rights Reserved.',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                        new Text(
+                          'Version $_version',
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
                 ],
