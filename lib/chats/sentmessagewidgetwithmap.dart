@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-
-import 'global.dart';
+import 'package:hospitalapp/screens/charts_map_screen.dart';
 
 class SentMessageWidgetwithmap extends StatelessWidget {
   final double g_location_lat;
@@ -14,6 +13,8 @@ class SentMessageWidgetwithmap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color myGreen = Color(0xff4bb17b);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7.0),
       child: Row(
@@ -48,16 +49,26 @@ class SentMessageWidgetwithmap extends StatelessWidget {
         future: _geolocate(_lat, _lng),
         builder: (context, locate) {
           if (locate.connectionState == ConnectionState.done) {
-            return Column(
-              children: <Widget>[
-                Icon(Icons.location_on),
-                Text(
-                  locate.data,
-                  style: Theme.of(context).textTheme.body2.apply(
-                        color: Colors.black,
-                      ),
-                ),
-              ],
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => chartsMapScreen(_lat, _lng),
+                  ),
+                );
+              },
+              child: Column(
+                children: <Widget>[
+                  Icon(Icons.location_on),
+                  Text(
+                    locate.data,
+                    style: Theme.of(context).textTheme.body2.apply(
+                          color: Colors.black,
+                        ),
+                  ),
+                ],
+              ),
             );
           } else {
             return Text(

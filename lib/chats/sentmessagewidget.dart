@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'global.dart';
-
 class SentMessageWidget extends StatelessWidget {
   final String description;
   final String time;
+
   const SentMessageWidget({@required this.description, @required this.time});
 
   @override
   Widget build(BuildContext context) {
+    Color myGreen = Color(0xff4bb17b);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7.0),
       child: Row(

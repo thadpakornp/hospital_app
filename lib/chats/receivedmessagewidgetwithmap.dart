@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hospitalapp/screens/charts_map_screen.dart';
 
 import 'mycircleavatar.dart';
 
@@ -63,16 +64,26 @@ class ReceivedMessagesWidgetwithmap extends StatelessWidget {
         future: _geolocate(_lat, _lng),
         builder: (context, locate) {
           if (locate.connectionState == ConnectionState.done) {
-            return Column(
-              children: <Widget>[
-                Icon(Icons.location_on),
-                Text(
-                  locate.data,
-                  style: Theme.of(context).textTheme.body2.apply(
-                        color: Colors.black,
-                      ),
-                ),
-              ],
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => chartsMapScreen(_lat, _lng),
+                  ),
+                );
+              },
+              child: Column(
+                children: <Widget>[
+                  Icon(Icons.location_on),
+                  Text(
+                    locate.data,
+                    style: Theme.of(context).textTheme.body2.apply(
+                          color: Colors.black,
+                        ),
+                  ),
+                ],
+              ),
             );
           } else {
             return Text(

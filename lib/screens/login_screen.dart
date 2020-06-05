@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/forget_screen.dart';
 import 'package:hospitalapp/screens/home_screen.dart';
+import 'package:hospitalapp/screens/register_screen.dart';
 import 'package:package_info/package_info.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -218,29 +219,54 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 16, right: 32),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new ForgetScreen()),
-                          ).then((value) {
-                            if (value != null) {
-                              _scaffoldKey.currentState.showSnackBar(
-                                  new SnackBar(content: Text(value)));
-                            }
-                          });
-                        },
-                        child: Text(
-                          'ลืมรหัสผ่าน ?',
-                          style: TextStyle(color: Colors.grey),
+                  Spacer(),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, right: 32),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new registerScreen()),
+                            ).then((value) {
+                              if (value != null) {
+                                _scaffoldKey.currentState.showSnackBar(
+                                    new SnackBar(content: Text(value)));
+                              }
+                            });
+                          },
+                          child: Text(
+                            'สมัครการใช้งาน',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16, right: 32),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => new ForgetScreen()),
+                            ).then((value) {
+                              if (value != null) {
+                                _scaffoldKey.currentState.showSnackBar(
+                                    new SnackBar(content: Text(value)));
+                              }
+                            });
+                          },
+                          child: Text(
+                            'ลืมรหัสผ่าน',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Spacer(),
                   Container(

@@ -7,6 +7,11 @@ class ApiProvider {
 
   String endPoint = 'https://suratstroke.com/api/v1';
 
+  Future<http.Response> getVersion() async {
+    String _url = '$endPoint/checkVersion';
+    return http.get(_url);
+  }
+
   Future<http.Response> getID(String token) async {
     String _url = '$endPoint/users/id';
     var headers = {
@@ -206,6 +211,32 @@ class ApiProvider {
       'oldPassword': '$oldPassword',
       'newPassword1': '$newPassword1',
       'newPassword2': '$newPassword2',
+    };
+    return http.post(_url, body: bodys, headers: headers);
+  }
+
+  Future<http.Response> lastProcessChat(
+      String token, String description, var id) async {
+    String _url = '$endPoint/charts/chat/lastProcess';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    var bodys = {
+      'id': '$id',
+      'description': '$description',
+    };
+    return http.post(_url, headers: headers, body: bodys);
+  }
+
+  Future<http.Response> getChatImage(String token, int id) async {
+    String _url = '$endPoint/charts/chat/images';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    var bodys = {
+      'id': '$id',
     };
     return http.post(_url, body: bodys, headers: headers);
   }

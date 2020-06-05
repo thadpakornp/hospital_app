@@ -29,10 +29,9 @@ class _chartsMapScreenState extends State<chartsMapScreen> {
   }
 
   Future _currectPosition() async {
-    _add();
     CameraPosition _myPosition = CameraPosition(
         bearing: 192.8334901395799,
-        target: LatLng(lat, lng),
+        target: LatLng(widget.lat, widget.lng),
         tilt: 59.440717697143555,
         zoom: 19.151926040649414);
     final GoogleMapController controller = await _controller.future;
@@ -48,7 +47,7 @@ class _chartsMapScreenState extends State<chartsMapScreen> {
     });
     final Marker marker = Marker(
       markerId: markerId,
-      position: LatLng(lat ?? 13.7248936, lng ?? 100.3529157),
+      position: LatLng(widget.lat, widget.lng),
     );
 
     setState(() {
@@ -59,11 +58,23 @@ class _chartsMapScreenState extends State<chartsMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
+        ),
+      ),
       body: Stack(
         children: <Widget>[
           GoogleMap(
             mapType: MapType.hybrid,
-            initialCameraPosition: CameraPosition(target: LatLng(lat, lng)),
+            initialCameraPosition:
+                CameraPosition(target: LatLng(widget.lat, widget.lng)),
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
             },

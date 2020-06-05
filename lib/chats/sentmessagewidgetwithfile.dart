@@ -32,7 +32,7 @@ class SentMessageWidgetwithfile extends StatelessWidget {
                 maxWidth: MediaQuery.of(context).size.width * .7),
             child: typefile == 'mp4' || typefile == 'mov'
                 ? InkWell(
-                    onLongPress: () {
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -47,7 +47,7 @@ class SentMessageWidgetwithfile extends StatelessWidget {
                     ),
                   )
                 : InkWell(
-                    onLongPress: () {
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -56,6 +56,7 @@ class SentMessageWidgetwithfile extends StatelessWidget {
                       );
                     },
                     child: CachedNetworkImage(
+                      filterQuality: FilterQuality.low,
                       imageUrl: '$url$file',
                       progressIndicatorBuilder:
                           (context, url, downloadProgress) =>

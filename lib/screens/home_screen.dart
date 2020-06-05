@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,10 @@ import 'package:hospitalapp/chats/chat_screen.dart';
 import 'package:hospitalapp/screens/charts_screen.dart';
 import 'package:hospitalapp/screens/charts_user_screen.dart';
 import 'package:hospitalapp/screens/user_screen.dart';
+import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'api_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,6 +19,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  ApiProvider apiProvider = ApiProvider();
+
   int currentIndex = 0;
   List pages = [
     ChartsScreen(),
@@ -65,10 +72,58 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future _checkVersion() async {
+    try {
+      final response = await apiProvider.getVersion();
+      if (response.statusCode == 200) {
+        final jsonRs = json.decode(response.body);
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        String version = packageInfo.version;
+        if (version != jsonRs['data']) {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: new Text("พบเวอร์ชั่นใหม่"),
+                  content: new Text(
+                      "แอพนี้ได้รับการเปลี่ยนแปลง กรุณาอัปเดทเพื่อใช้งานต่อ"),
+                  actions: <Widget>[
+                    // usually buttons at the bottom of the dialog
+                    new FlatButton(
+                      child: new Text("ภายหลัง"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    new FlatButton(
+                      child: new Text("อัปเดทตอนนี้"),
+                      onPressed: _launchURL,
+                    ),
+                  ],
+                );
+              });
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  _launchURL() async {
+    const url =
+        'https://play.google.com/store/apps/details?id=com.imatthio.hospitalapp';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _checkVersion();
     initFirebaseMessaging();
     var android = new AndroidInitializationSettings('app_icon');
     var ios = new IOSInitializationSettings();

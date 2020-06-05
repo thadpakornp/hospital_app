@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hospitalapp/screens/chewie_list_item_copy.dart';
 import 'package:hospitalapp/screens/play_video.dart';
+import 'package:hospitalapp/screens/show_image.dart';
 import 'package:video_player/video_player.dart';
 
 import 'mycircleavatar.dart';
@@ -24,35 +25,6 @@ class ReceivedMessagesWidgetwithfile extends StatelessWidget {
   Widget build(BuildContext context) {
     String url = "https://suratstroke.com/public/assets/img/temnails/";
     String url2 = "https://suratstroke.com/public/assets/img/photos/";
-
-    Widget _detailScreen(String files) {
-      return GestureDetector(
-        child: Center(
-          child: Hero(
-            tag: 'imageHero$files',
-            child: Image.network(
-              files,
-              fit: BoxFit.cover,
-              loadingBuilder: (BuildContext context, Widget child,
-                  ImageChunkEvent loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes
-                        : null,
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-        onTap: () {
-          Navigator.of(context).pop();
-        },
-      );
-    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 7.0),
@@ -88,10 +60,16 @@ class ReceivedMessagesWidgetwithfile extends StatelessWidget {
                         ),
                       )
                     : InkWell(
-                        onLongPress: () {
-                          _detailScreen('$url$file');
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ShowImage('$url$file'),
+                            ),
+                          );
                         },
                         child: CachedNetworkImage(
+                          filterQuality: FilterQuality.low,
                           imageUrl: '$url$file',
                           progressIndicatorBuilder:
                               (context, url, downloadProgress) =>

@@ -683,11 +683,15 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 chart_lasted[index]['description'] != null
-                                    ? Text(
-                                        '${chart_lasted[index]['description']}',
-                                        style: TextStyle(fontSize: 14),
+                                    ? Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 9.0),
+                                        child: Text(
+                                          '${chart_lasted[index]['description']}',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
                                       )
-                                    : Text(''),
+                                    : Container(),
                                 chart_lasted[index]['files'] != null
                                     ? Container(
                                         height: 230,
