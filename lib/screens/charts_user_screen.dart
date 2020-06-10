@@ -11,8 +11,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hospitalapp/resources/chart_files.dart';
 import 'package:hospitalapp/screens/add_charts_description_screen.dart';
 import 'package:hospitalapp/screens/api_provider.dart';
+import 'package:hospitalapp/screens/charts_image_screen.dart';
 import 'package:hospitalapp/screens/charts_map_screen.dart';
 import 'package:hospitalapp/screens/chewie_list_item.dart';
+import 'package:hospitalapp/screens/play_video.dart';
 import 'package:video_player/video_player.dart';
 
 class ChartsUserScreen extends StatefulWidget {
@@ -136,9 +138,19 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
 
   Widget _video(String files) {
     final String file = files.replaceAll('temnails', 'photos');
-    return ChewieListItem(
-      videoPlayerController: VideoPlayerController.network('$file'),
-      looping: false,
+    return InkWell(
+      onLongPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlayVideo('$file'),
+          ),
+        );
+      },
+      child: ChewieListItem(
+        videoPlayerController: VideoPlayerController.network('$file'),
+        looping: false,
+      ),
     );
   }
 
@@ -157,11 +169,33 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                   if (files.type_files == 'mp4' || files.type_files == 'MOV') {
                     return _video(files.files);
                   } else {
-                    return _image(files.files);
+                    return snapshot.data.length > 1
+                        ? _images(files.files)
+                        : _image(files.files);
                   }
                 },
               )
             : Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Widget _images(String files) {
+    return GestureDetector(
+      child: Padding(
+        padding: const EdgeInsets.only(right: 8.0),
+        child: Hero(
+          tag: 'imageHero$files',
+          child: Image.network(
+            files,
+            width: 250,
+          ),
+        ),
+      ),
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) {
+          return _detailScreen(files);
+        }));
       },
     );
   }
@@ -585,6 +619,17 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
         ),
         actions: <Widget>[
           IconButton(
+            icon: Icon(Icons.image),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => chartsImagesScreen(widget.id),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: Icon(Icons.calendar_today),
             onPressed: () {
               _calendar(context);
@@ -694,7 +739,7 @@ class _ChartsUserScreenState extends State<ChartsUserScreen> {
                                     : Container(),
                                 chart_lasted[index]['files'] != null
                                     ? Container(
-                                        height: 230,
+                                        height: 200,
                                         child:
                                             _files(chart_lasted[index]['id']),
                                       )

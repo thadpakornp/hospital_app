@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Saraban',
-        primarySwatch: Colors.deepOrange,
+        primarySwatch: Colors.blue,
       ),
       title: 'IMATTHIO',
       home: LoginScreen(),

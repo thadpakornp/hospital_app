@@ -19,30 +19,35 @@ class _ForgetScreenState extends State<ForgetScreen> {
   final TextEditingController ctrlEmail = TextEditingController();
 
   Future doForget() async {
-    setState(() {
-      isLoading = true;
-    });
-    try {
-      final response = await apiProvider.doForget(ctrlEmail.text);
-      setState(() {
-        isLoading = false;
-      });
-      if (response.statusCode == 200) {
-        final status = json.decode(response.body);
-        if (status['code'] != '200') {
-          _scaffoldKey.currentState
-              .showSnackBar(new SnackBar(content: Text(status['data'])));
-        } else {
-          Navigator.of(context).pop(status['data']);
-        }
-      }
-    } catch (e) {
-      print(e);
-      setState(() {
-        isLoading = false;
-      });
+    if (ctrlEmail.text == '') {
       _scaffoldKey.currentState
-          .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
+          .showSnackBar(new SnackBar(content: Text('กรุณาระบุอีเมล')));
+    } else {
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        final response = await apiProvider.doForget(ctrlEmail.text);
+        setState(() {
+          isLoading = false;
+        });
+        if (response.statusCode == 200) {
+          final status = json.decode(response.body);
+          if (status['code'] != '200') {
+            _scaffoldKey.currentState
+                .showSnackBar(new SnackBar(content: Text(status['data'])));
+          } else {
+            Navigator.of(context).pop(status['data']);
+          }
+        }
+      } catch (e) {
+        print(e);
+        setState(() {
+          isLoading = false;
+        });
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
+      }
     }
   }
 
@@ -65,7 +70,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Color(0xFFf45d27), Color(0xFFf5851f)],
+                    colors: [Colors.lightBlueAccent, Colors.indigoAccent],
                   ),
                   borderRadius:
                       BorderRadius.only(bottomLeft: Radius.circular(90))),
@@ -88,7 +93,10 @@ class _ForgetScreenState extends State<ForgetScreen> {
                       padding: const EdgeInsets.only(bottom: 32, right: 32),
                       child: Text(
                         'Surat Stroke Fast Track'.toUpperCase(),
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -130,7 +138,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                     width: MediaQuery.of(context).size.width / 1.2,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFFf45d27), Color(0xFFf5851f)],
+                          colors: [Colors.lightBlueAccent, Colors.indigoAccent],
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(50))),
                     child: Center(
@@ -146,7 +154,10 @@ class _ForgetScreenState extends State<ForgetScreen> {
                                     fontWeight: FontWeight.bold),
                               ),
                             )
-                          : CircularProgressIndicator(),
+                          : CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
                     ),
                   ),
                   Spacer(),
@@ -169,7 +180,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                           );
                         },
                         child: Text(
-                          'เข้าใช้งานระบบ',
+                          'กลับหน้าล็อคอิน',
                           style: TextStyle(
                               color: Colors.white, fontWeight: FontWeight.bold),
                         ),

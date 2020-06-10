@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Color(0xFFf45d27), Color(0xFFf5851f)],
+                    colors: [Colors.lightBlueAccent, Colors.indigoAccent],
                   ),
                   borderRadius:
                       BorderRadius.only(bottomLeft: Radius.circular(90))),
@@ -157,7 +157,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       padding: const EdgeInsets.only(bottom: 32, right: 32),
                       child: Text(
                         'Surat Stroke Fast Track'.toUpperCase(),
-                        style: TextStyle(color: Colors.white, fontSize: 18),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -274,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: MediaQuery.of(context).size.width / 1.2,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFFf45d27), Color(0xFFf5851f)],
+                          colors: [Colors.lightBlueAccent, Colors.indigoAccent],
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(50))),
                     child: Center(
@@ -290,7 +293,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     fontWeight: FontWeight.bold),
                               ),
                             )
-                          : CircularProgressIndicator(),
+                          : CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
                     ),
                   ),
                   Spacer(),

@@ -32,7 +32,7 @@ class SentMessageWidgetwithfile extends StatelessWidget {
                 maxWidth: MediaQuery.of(context).size.width * .7),
             child: typefile == 'mp4' || typefile == 'mov'
                 ? InkWell(
-                    onTap: () {
+                    onLongPress: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(

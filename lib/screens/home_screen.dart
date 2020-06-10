@@ -5,13 +5,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hospitalapp/chats/chat_screen.dart';
-import 'package:hospitalapp/screens/charts_screen.dart';
 import 'package:hospitalapp/screens/charts_user_screen.dart';
 import 'package:hospitalapp/screens/user_screen.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'api_provider.dart';
+import 'charts_month_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -23,9 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int currentIndex = 0;
   List pages = [
-    ChartsScreen(),
+    ChartsMonthScreen(),
     UserScreen(),
-    ChatScreen(),
   ];
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
@@ -163,6 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Colors.blueGrey,
         shape: CircularNotchedRectangle(),
         notchMargin: 7.0,
         child: Row(

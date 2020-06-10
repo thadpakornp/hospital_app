@@ -127,7 +127,7 @@ class _UserScreenState extends State<UserScreen> {
       appBar: AppBar(
         title: Text('โปรไฟล์'),
         elevation: 0,
-        backgroundColor: Color(0xFF1E8161),
+        backgroundColor: Colors.indigo,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -138,7 +138,7 @@ class _UserScreenState extends State<UserScreen> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height / 2,
                     decoration: BoxDecoration(
-                      color: Color(0xFF1E8161),
+                      color: Colors.indigo,
                       borderRadius: BorderRadius.only(
                           bottomRight: Radius.circular(32),
                           bottomLeft: Radius.circular(32)),

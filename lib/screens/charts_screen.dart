@@ -7,21 +7,29 @@ import 'package:hospitalapp/screens/api_provider.dart';
 import 'package:hospitalapp/screens/charts_user_screen.dart';
 
 class ChartsScreen extends StatefulWidget {
+  String date_value;
+
+  ChartsScreen(this.date_value);
   @override
-  _ChartsScreenState createState() => _ChartsScreenState();
+  _ChartsScreenState createState() => _ChartsScreenState(date_value);
 }
 
 class _ChartsScreenState extends State<ChartsScreen> {
+  String date_value;
+
+  _ChartsScreenState(this.date_value);
+
   ApiProvider apiProvider = ApiProvider();
 
   String _status = 'all';
   var charts;
+  int hn = 0;
 
   bool isLoding = true;
 
-  final Color accentColor = Color(0XFFFA2B0F);
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final storage = new FlutterSecureStorage();
+  TextEditingController _searchQueryController = TextEditingController();
 
   @override
   void initState() {
@@ -32,7 +40,8 @@ class _ChartsScreenState extends State<ChartsScreen> {
   Future<Null> _getCharts() async {
     String token = await storage.read(key: 'token');
     try {
-      final response = await apiProvider.getCharts(token, _status);
+      final response =
+          await apiProvider.getCharts(token, date_value, hn, _status);
       if (response.statusCode == 200) {
         var jsonResponse = json.decode(response.body);
         setState(() {
@@ -57,18 +66,6 @@ class _ChartsScreenState extends State<ChartsScreen> {
     );
   }
 
-  Widget _buildBottomCard(double width, double height) {
-    return Container(
-      width: width,
-      height: height / 3,
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-      decoration: BoxDecoration(
-          color: accentColor,
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(16), topLeft: Radius.circular(16))),
-    );
-  }
-
   Widget _buildCardsList() {
     return RefreshIndicator(
       onRefresh: _getCharts,
@@ -84,7 +81,7 @@ class _ChartsScreenState extends State<ChartsScreen> {
                 child: Container(
                   height: 110,
                   child: Card(
-                    color: Color(0xFF1E8161),
+                    color: Colors.indigo,
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundImage:
@@ -129,15 +126,9 @@ class _ChartsScreenState extends State<ChartsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.grey[300],
         title: _buildTitle(),
         actions: <Widget>[
           IconButton(
@@ -169,15 +160,32 @@ class _ChartsScreenState extends State<ChartsScreen> {
         ],
       ),
       body: Container(
-        margin: EdgeInsets.only(top: 16),
         child: Stack(
           children: <Widget>[
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: _buildBottomCard(width, height)),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                keyboardType: TextInputType.number,
+                onSubmitted: (value) {
+                  if (value == null || value == '') {
+                    _scaffoldKey.currentState.showSnackBar(
+                        new SnackBar(content: Text('กรุณาระบุหมายเลข HN')));
+                  } else {}
+                },
+                controller: _searchQueryController,
+                decoration: InputDecoration(
+                    hintText: "ค้นหาด้วยหมายเลข HN",
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              ),
+            ),
             isLoding
                 ? Center(child: CircularProgressIndicator())
-                : _buildCardsList(),
+                : Padding(
+                    padding: const EdgeInsets.only(top: 80),
+                    child: _buildCardsList(),
+                  ),
           ],
         ),
       ),

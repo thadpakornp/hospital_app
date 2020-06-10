@@ -64,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     _getID();
-    _getOldChat();
+    _getOldChats();
     socketIO = SocketIOManager()
         .createSocketIO('https://real-chat-suratstroke.herokuapp.com', '/');
     socketIO.init();
@@ -125,7 +125,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future _getOldChat() async {
+  Future _getOldChats() async {
     String token = await storage.read(key: 'token');
     try {
       final response = await apiProvider.getChats(token);
@@ -136,7 +136,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           _loading = false;
         });
         Timer(
-            Duration(milliseconds: 1300),
+            Duration(milliseconds: 1600),
             () => _scrollController.animateTo(
                   _scrollController.position.maxScrollExtent,
                   duration: Duration(milliseconds: 600),
@@ -147,7 +147,32 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
-      print(e);
+      return null;
+    }
+  }
+
+  Future _getOldChat() async {
+    String token = await storage.read(key: 'token');
+    try {
+      final response = await apiProvider.getChats(token);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          messages = data['data'];
+        });
+        Timer(
+            Duration(milliseconds: 1200),
+            () => _scrollController.animateTo(
+                  _scrollController.position.maxScrollExtent,
+                  duration: Duration(milliseconds: 400),
+                  curve: Curves.ease,
+                ));
+      } else {
+        _scaffoldKey.currentState
+            .showSnackBar(new SnackBar(content: Text('เกิดข้อผิดพลาด')));
+      }
+    } catch (e) {
+      return null;
     }
   }
 
@@ -223,11 +248,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       _scaffoldKey.currentState
           .showSnackBar(SnackBar(content: Text('การส่งเกิดข้อผิดพลาด')));
     } else {
+      description.clear();
       await apiProvider.sendNotifyToWeb(token, description.text ?? '');
       setState(() {
         isUpload = false;
         _showBottom = false;
       });
+      _getOldChat();
       socketIO.sendMessage('send_message', json.encode({'message': 'ok'}));
     }
   }
@@ -278,6 +305,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             _showBottom = false;
             isUpload = false;
           });
+          _getOldChat();
           socketIO.sendMessage('send_message', json.encode({'message': 'ok'}));
         } else {
           _scaffoldKey.currentState
@@ -288,7 +316,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             .showSnackBar(SnackBar(content: Text('เกิดข้อผิดพลาด')));
       }
     } catch (e) {
-      print(e);
       _scaffoldKey.currentState
           .showSnackBar(new SnackBar(content: Text('กำลังเชื่อมต่อ...')));
     }
@@ -299,7 +326,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return FutureBuilder(
         future: _getImageChat(id),
         builder: (context, snapshot) {
-          print(snapshot);
           if (snapshot.hasError)
             return Container(
               constraints: BoxConstraints(
@@ -354,11 +380,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                       child: CachedNetworkImage(
                                         filterQuality: FilterQuality.low,
                                         imageUrl: snapshot.data[index].files,
-                                        placeholder: (context, url) =>
-                                            const CircleAvatar(
-                                          backgroundColor: Colors.amber,
-                                          radius: 150,
-                                        ),
+                                        placeholder: (context, url) => Center(
+                                            child: CircularProgressIndicator()),
                                         errorWidget: (context, url, error) =>
                                             Icon(Icons.error),
                                       ),
@@ -389,7 +412,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return FutureBuilder(
         future: _getImageChat(id),
         builder: (context, snapshot) {
-          print(snapshot);
           if (snapshot.hasError)
             return Container(
               constraints: BoxConstraints(
@@ -442,11 +464,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                                   child: CachedNetworkImage(
                                     filterQuality: FilterQuality.low,
                                     imageUrl: snapshot.data[index].files,
-                                    placeholder: (context, url) =>
-                                        const CircleAvatar(
-                                      backgroundColor: Colors.amber,
-                                      radius: 150,
-                                    ),
+                                    placeholder: (context, url) => Center(
+                                        child: CircularProgressIndicator()),
                                     errorWidget: (context, url, error) =>
                                         Icon(Icons.error),
                                   ),
@@ -724,8 +743,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         if (response.statusCode == 200) {
           var jsonResponse = json.decode(response.body);
           if (jsonResponse['code'] == '200') {
-            description.clear();
             await apiProvider.sendNotifyToWeb(token, description.text);
+            description.clear();
+            _getOldChat();
             socketIO.sendMessage(
                 'send_message', json.encode({'message': 'ok'}));
           } else {
@@ -768,6 +788,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 if (value != null && value == true) {
                   String token = await storage.read(key: 'token');
                   await apiProvider.sendNotifyToWeb(token, 'สร้างอัลบั้มใหม่');
+                  _getOldChat();
                   socketIO.sendMessage(
                       'send_message', json.encode({'message': 'ok'}));
                 }

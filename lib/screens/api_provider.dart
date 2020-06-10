@@ -62,8 +62,30 @@ class ApiProvider {
     return http.post(_url, headers: headers);
   }
 
-  Future<http.Response> getCharts(String token, String status) async {
-    String _url = '$endPoint/charts/index/$status';
+  Future<http.Response> getMonths(String token) async {
+    String _url = '$endPoint/charts/mouths';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    return http.get(_url, headers: headers);
+  }
+
+  Future<http.Response> getMonthsFromSeach(String token, String hn) async {
+    String _url = '$endPoint/charts/search';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    var bodys = {
+      "hn": '$hn',
+    };
+    return http.post(_url, headers: headers, body: bodys);
+  }
+
+  Future<http.Response> getCharts(
+      String token, String date_value, int hn, String status) async {
+    String _url = '$endPoint/charts/index/$date_value/$hn/$status';
     var headers = {
       "Authorization": "Bearer $token",
       "Accept": "application/json"
@@ -183,7 +205,7 @@ class ApiProvider {
       "Accept": "application/json"
     };
     var bodys = {
-      "description": description,
+      "description": '$description',
     };
     return http.post(_url, headers: headers, body: bodys);
   }
@@ -239,5 +261,14 @@ class ApiProvider {
       'id': '$id',
     };
     return http.post(_url, body: bodys, headers: headers);
+  }
+
+  Future<http.Response> getImageChart(String token, int id) async {
+    String _url = '$endPoint/charts/images/$id';
+    var headers = {
+      "Authorization": "Bearer $token",
+      "Accept": "application/json"
+    };
+    return http.get(_url, headers: headers);
   }
 }

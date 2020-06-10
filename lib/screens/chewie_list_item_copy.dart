@@ -23,16 +23,12 @@ class _ChewieListItemState extends State<ChewieListItem> {
   @override
   void initState() {
     super.initState();
-    // Wrapper on top of the videoPlayerController
     _chewieController = ChewieController(
       videoPlayerController: widget.videoPlayerController,
       allowFullScreen: false,
-      aspectRatio: 3 / 2,
-      // Prepare the video to be played and display the first frame
+      aspectRatio: 16 / 9,
       autoInitialize: true,
       looping: widget.looping,
-      // Errors can occur for example when trying to play a video
-      // from a non-existent URL
       errorBuilder: (context, errorMessage) {
         return Center(
           child: Text(
@@ -53,9 +49,8 @@ class _ChewieListItemState extends State<ChewieListItem> {
 
 //  @override
 //  void dispose() {
-//    super.dispose();
-//    // IMPORTANT to dispose of all the used resources
 //    widget.videoPlayerController.dispose();
 //    _chewieController.dispose();
+//    super.dispose();
 //  }
 }
